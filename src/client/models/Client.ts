@@ -1,6 +1,7 @@
-export interface Salon{
-    salon_id: number | null;
-    capacity : number; 
+export interface Client {
+    client_id: number | null;
+    name: string;
+    cellphone: number,
     created_at: String;
     created_by: string;
     updated_at: String;
