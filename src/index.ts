@@ -4,13 +4,11 @@ import * as dotenv from 'dotenv';
 
 // Importar rutas de módulos
 import employeeRoutes from './employee/routes/employeeRoutes';
-import loginRoutes from './user_balam/routes/loginRoutes';
 import salonRoutes from './salon/routes/salonRoutes';
 import reservationRoutes from './reservation/routes/reservationRoutes';
 import mobiliaryRoutes from './mobiliary/routes/mobiliaryRoutes';
 import clientRoutes from './client/routes/clientRoutes';
 import userRoutes from './user/routes/userRoutes';
-import rawUserRoutes from './user_balam/routes/employeeRoutes';
 
 // Importar middlewares compartidos
 import { errorHandler } from './shared/middlewares/errorHandler';
@@ -31,12 +29,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Rutas de los módulos
 app.use('/api/employee', employeeRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/login', loginRoutes);
 app.use('/api/salon', salonRoutes);
 app.use('/api/reservation', reservationRoutes);
 app.use('/api/mobiliary', mobiliaryRoutes);
 app.use('/api/client', clientRoutes);
-app.use('/api/rawUser', rawUserRoutes);
 
 // Middleware para manejar rutas no encontradas
 app.use(notFoundHandler);
