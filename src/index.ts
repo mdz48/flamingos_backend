@@ -4,10 +4,13 @@ import * as dotenv from 'dotenv';
 
 // Importar rutas de módulos
 import employeeRoutes from './employee/routes/employeeRoutes';
+import userRoutes from './user/routes/userRoutes';
+import rawUserRoutes from './user_balam/routes/employeeRoutes';
 
 // Importar middlewares compartidos
 import { errorHandler } from './shared/middlewares/errorHandler';
 import { notFoundHandler } from './shared/middlewares/notFoundHandler';
+import { authMiddleware } from './shared/middlewares/auth';
 
 // Configuración de variables de entorno
 dotenv.config();
@@ -22,12 +25,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Rutas de los módulos
 app.use('/api/employee', employeeRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/rawUser', rawUserRoutes);
 
 // Middleware para manejar rutas no encontradas
 app.use(notFoundHandler);
 
 // Middleware de manejo de errores
 app.use(errorHandler);
+
+// Middleware para autentificación
+app.use(authMiddleware);
+
 
 // Iniciar el servidor
 app.listen(port, () => {
