@@ -36,7 +36,7 @@ export class RentedMobiliaryService {
       if (rentedMobiliary) {
         rentedMobiliary.name = rentedMobiliaryData.name;
         rentedMobiliary.description = rentedMobiliaryData.description;
-        rentedMobiliary.rental_price = rentedMobiliaryData.rental_price;
+        rentedMobiliary.rental_cost = rentedMobiliaryData.rental_cost;
         rentedMobiliary.rented_by = rentedMobiliaryData.rented_by;
         rentedMobiliary.rental_start_date = DateUtils.formatDate(new Date());
         rentedMobiliary.rental_end_date = rentedMobiliaryData.rental_end_date;

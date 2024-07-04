@@ -35,9 +35,9 @@ export class RentedMobiliaryRepository {
   }
 
   public static async createRentedMobiliary(rentedMobiliary: RentedMobiliary): Promise<RentedMobiliary> {
-    const query = 'INSERT INTO rented_mobiliary (name, description, rental_price, rented_by, rental_start_date, rental_end_date, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO rented_mobiliary (name, description, rental_cost, rented_by, rental_start_date, rental_end_date, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [rentedMobiliary.name, rentedMobiliary.description, rentedMobiliary.rental_price, rentedMobiliary.rented_by, rentedMobiliary.rental_start_date, rentedMobiliary.rental_end_date, rentedMobiliary.created_at, rentedMobiliary.created_by, rentedMobiliary.updated_at, rentedMobiliary.updated_by, rentedMobiliary.deleted], (error, result: ResultSetHeader) => {
+      connection.execute(query, [rentedMobiliary.name, rentedMobiliary.description, rentedMobiliary.rental_cost, rentedMobiliary.rented_by, rentedMobiliary.rental_start_date, rentedMobiliary.rental_end_date, rentedMobiliary.created_at, rentedMobiliary.created_by, rentedMobiliary.updated_at, rentedMobiliary.updated_by, rentedMobiliary.deleted], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {
@@ -50,9 +50,9 @@ export class RentedMobiliaryRepository {
   }
 
   public static async updateRentedMobiliary(rentedMobiliary_id: number, rentedMobiliaryData: RentedMobiliary): Promise<RentedMobiliary | null> {
-    const query = 'UPDATE rented_mobiliary SET name = ?, description = ?, rental_price = ?, rented_by = ?, rental_start_date = ?, rental_end_date = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE rentedMobiliary_id = ?';
+    const query = 'UPDATE rented_mobiliary SET name = ?, description = ?, rental_cost = ?, rented_by = ?, rental_start_date = ?, rental_end_date = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE rentedMobiliary_id = ?';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [rentedMobiliaryData.name, rentedMobiliaryData.description, rentedMobiliaryData.rental_price, rentedMobiliaryData.rented_by, rentedMobiliaryData.rental_start_date, rentedMobiliaryData.rental_end_date, rentedMobiliaryData.updated_at, rentedMobiliaryData.updated_by, rentedMobiliaryData.deleted, rentedMobiliary_id], (error, result: ResultSetHeader) => {
+      connection.execute(query, [rentedMobiliaryData.name, rentedMobiliaryData.description, rentedMobiliaryData.rental_cost, rentedMobiliaryData.rented_by, rentedMobiliaryData.rental_start_date, rentedMobiliaryData.rental_end_date, rentedMobiliaryData.updated_at, rentedMobiliaryData.updated_by, rentedMobiliaryData.deleted, rentedMobiliary_id], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {

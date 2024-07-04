@@ -1,12 +1,17 @@
-export interface Reservation{
+export interface Reservation {
     reservation_id: number | null;
-    salon_id_fk: number,
-    user_id_fk: number,
-    mobiliary_id_fk: number,
-    supplies_id_fk: number,
-    created_at: String;
+    salon_id_fk: number;
+    mobiliary_id_fk: number;
+    client_id_fk: number;
+    guest_count: number;
+    package_type: string;
+    mobiliary_quantity: number;
+    food_type: string;
+    event_datetime: string;
+    event_type: string;
+    created_at: string;
     created_by: string;
-    updated_at: String;
+    updated_at: string;
     updated_by: string;
     deleted: boolean;
 }

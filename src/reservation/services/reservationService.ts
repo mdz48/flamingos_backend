@@ -35,9 +35,14 @@ export class ReservationService {
             const reservationFound = await ReservationRepository.findById(reservationId);
             if (reservationFound) {
                 reservationFound.salon_id_fk = reservationData.salon_id_fk || reservationFound.salon_id_fk;
-                reservationFound.user_id_fk = reservationData.user_id_fk || reservationFound.user_id_fk;
+                reservationFound.client_id_fk = reservationData.client_id_fk || reservationFound.client_id_fk;
                 reservationFound.mobiliary_id_fk = reservationData.mobiliary_id_fk || reservationFound.mobiliary_id_fk;
-                reservationFound.supplies_id_fk = reservationData.supplies_id_fk || reservationFound.supplies_id_fk;
+                reservationFound.guest_count = reservationData.guest_count || reservationFound.guest_count;
+                reservationFound.package_type = reservationData.package_type || reservationFound.package_type;
+                reservationFound.mobiliary_quantity = reservationData.mobiliary_quantity || reservationFound.mobiliary_quantity;
+                reservationFound.food_type = reservationData.food_type || reservationFound.food_type;
+                reservationFound.event_datetime = reservationData.event_datetime || reservationFound.event_datetime;
+                reservationFound.event_type = reservationData.event_type || reservationFound.event_type;
                 reservationFound.deleted = reservationData.deleted !== undefined ? reservationData.deleted : reservationFound.deleted;
             } else {
                 return null;
