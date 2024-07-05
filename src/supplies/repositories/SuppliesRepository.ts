@@ -35,9 +35,9 @@ export class SuppliesRepository {
     }
 
     public static async createSupplies(supplies: Supplies): Promise<Supplies> {
-        const query = 'INSERT INTO supplies (name, stock, price, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO supplies (name, stock, cost, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
         return new Promise((resolve, reject) => {
-            connection.execute(query, [supplies.name, supplies.stock, supplies.price, supplies.created_at, supplies.created_by, supplies.updated_at, supplies.updated_by, supplies.deleted], (error, result: ResultSetHeader) => {
+            connection.execute(query, [supplies.name, supplies.cost, supplies.created_at, supplies.created_by, supplies.updated_at, supplies.updated_by, supplies.deleted], (error, result: ResultSetHeader) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -50,9 +50,9 @@ export class SuppliesRepository {
     }
 
     public static async updateSupplies(supplies_id: number, suppliesData: Supplies): Promise<Supplies | null> {
-        const query = 'UPDATE supplies SET name = ?, stock = ?, price = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE supplies_id = ?';
+        const query = 'UPDATE supplies SET name = ?, stock = ?, cost = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE supplies_id = ?';
         return new Promise((resolve, reject) => {
-            connection.execute(query, [suppliesData.name, suppliesData.stock, suppliesData.price, suppliesData.updated_at, suppliesData.updated_by, suppliesData.deleted, supplies_id], (error, result: ResultSetHeader) => {
+            connection.execute(query, [suppliesData.name, suppliesData.cost, suppliesData.updated_at, suppliesData.updated_by, suppliesData.deleted, supplies_id], (error, result: ResultSetHeader) => {
                 if (error) {
                     reject(error);
                 } else {

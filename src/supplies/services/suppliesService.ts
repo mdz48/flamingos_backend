@@ -35,8 +35,7 @@ export class SuppliesService {
             const suppliesFound = await SuppliesRepository.findById(suppliesId);
             if (suppliesFound) {
                 suppliesFound.name = suppliesData.name || suppliesFound.name;
-                suppliesFound.stock = suppliesData.stock || suppliesFound.stock;
-                suppliesFound.price = suppliesData.price || suppliesFound.price;
+                suppliesFound.cost = suppliesData.cost || suppliesFound.cost;
                 suppliesFound.deleted = suppliesData.deleted !== undefined ? suppliesData.deleted : suppliesFound.deleted;
             } else {
                 return null;
