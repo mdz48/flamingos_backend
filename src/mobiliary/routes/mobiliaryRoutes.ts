@@ -4,7 +4,7 @@ import { authMiddleware } from '../../shared/middlewares/auth';
 
 const mobiliaryRoutes: Router = Router();
 
-mobiliaryRoutes.get('/', getMobiliaries);
+mobiliaryRoutes.get('/', authMiddleware, getMobiliaries);
 mobiliaryRoutes.get('/:mobiliary_id', authMiddleware, getMobiliaryById);
 mobiliaryRoutes.post('/', authMiddleware, createMobiliary);
 mobiliaryRoutes.put('/:mobiliary_id', authMiddleware, updateMobiliary);

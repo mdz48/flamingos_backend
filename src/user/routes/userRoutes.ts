@@ -6,11 +6,11 @@ const userRoutes: Router = Router();
 
 userRoutes.post('/login', loginUser);
 
-userRoutes.get('/', getUsers);
+userRoutes.get('/', authMiddleware, getUsers);
 
 userRoutes.get('/:user_id', authMiddleware, getUserById);
 
-userRoutes.post('/',  createUser);
+userRoutes.post('/', authMiddleware,  createUser);
 
 userRoutes.put('/:user_id', authMiddleware, updateUser);
 

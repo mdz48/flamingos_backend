@@ -8,7 +8,7 @@ node_modules/
 # IDE - VSCode
 /.vscode
 .history/*
-
+.env
 
 
 npm-debug.log*

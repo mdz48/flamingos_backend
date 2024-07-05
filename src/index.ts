@@ -10,6 +10,7 @@ import mobiliaryRoutes from './mobiliary/routes/mobiliaryRoutes';
 import clientRoutes from './client/routes/clientRoutes';
 import userRoutes from './user/routes/userRoutes';
 import suppliesRoutes from './supplies/routes/suppliesRoutes';
+import rentedMobiliaryRoutes from './rentedMobiliary/routes/rentedMobiliaryRoutes';
 
 // Importar middlewares compartidos
 import { errorHandler } from './shared/middlewares/errorHandler';
@@ -35,6 +36,7 @@ app.use('/api/reservation', reservationRoutes);
 app.use('/api/mobiliary', mobiliaryRoutes);
 app.use('/api/client', clientRoutes);
 app.use('/api/supplies', suppliesRoutes);
+app.use('/api/rentedmobiliary', rentedMobiliaryRoutes);
 
 // Middleware para manejar rutas no encontradas
 app.use(notFoundHandler);
