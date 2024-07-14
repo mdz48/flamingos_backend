@@ -14,6 +14,15 @@ export const getClients = async (_req: Request, res: Response) => {
   }
 };
 
+export const getClientSummaries = async (_req: Request, res: Response) => {
+  try {
+      const clientSummaries = await ClientService.getAllClientSummaries();
+      res.status(200).json(clientSummaries);
+  } catch (error: any) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
 export const getClientById = async (req: Request, res: Response) => {
   try {
     const client = await ClientService.getClientById(parseInt(req.params.client_id, 10));

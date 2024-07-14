@@ -14,6 +14,19 @@ export const getMobiliaries = async (_req: Request, res: Response) => {
   }
 };
 
+export const getMobiliarySummaries = async (_req: Request, res: Response) => {
+  try {
+    const mobiliarySummaries = await MobiliaryService.getAllMobiliarySummaries();
+    if (mobiliarySummaries) {
+      res.status(200).json(mobiliarySummaries);
+    } else {
+      res.status(404).json({ message: 'Sin registros' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getMobiliaryById = async (req: Request, res: Response) => {
   try {
     const mobiliary = await MobiliaryService.getMobiliaryById(parseInt(req.params.mobiliary_id, 10));

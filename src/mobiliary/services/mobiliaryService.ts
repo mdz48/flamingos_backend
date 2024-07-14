@@ -1,5 +1,5 @@
 import { MobiliaryRepository } from "../repositories/MobiliaryRepository";
-import { Mobiliary } from "../models/Mobiliary";
+import { Mobiliary, MobiliarySummary } from "../models/Mobiliary";
 import { DateUtils } from "../../shared/utils/DateUtils";
 
 export class MobiliaryService {
@@ -9,6 +9,14 @@ export class MobiliaryService {
             return await MobiliaryRepository.findAll();
         } catch (error: any) {
             throw new Error(`Error al obtener mobiliarios: ${error.message}`);
+        }
+    }
+
+    public static async getAllMobiliarySummaries(): Promise<MobiliarySummary[]> {
+        try {
+            return await MobiliaryRepository.findAllSummaries();
+        } catch (error: any) {
+            throw new Error(`Error al obtener resúmenes de mobiliarios: ${error.message}`);
         }
     }
 
