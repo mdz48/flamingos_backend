@@ -14,9 +14,35 @@ export const getRentedMobiliary = async (_req: Request, res: Response) => {
   }
 };
 
+export const getRentedMobiliarySummaries = async (_req: Request, res: Response) => {
+  try {
+    const rentedMobiliary = await RentedMobiliaryService.getAllRentedMobiliarySummaries();
+    if (rentedMobiliary) {
+      res.status(200).json(rentedMobiliary);
+    } else {
+      res.status(404).json({ message: 'Sin registros' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getRentedMobiliaryById = async (req: Request, res: Response) => {
   try {
-    const rentedMobiliary = await RentedMobiliaryService.getRentedMobiliaryById(parseInt(req.params.id));
+    const rentedMobiliary = await RentedMobiliaryService.getRentedMobiliaryById(parseInt(req.params.rented_mobiliary_id, 10));
+    if (rentedMobiliary) {
+      res.status(200).json(rentedMobiliary);
+    } else {
+      res.status(404).json({ message: 'Registro no encontrado' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getRentedMobiliaryByIdSummaries = async (req: Request, res: Response) => {
+  try {
+    const rentedMobiliary = await RentedMobiliaryService.getRentedMobiliaryByIdSummaries(parseInt(req.params.rented_mobiliary_id, 10));
     if (rentedMobiliary) {
       res.status(200).json(rentedMobiliary);
     } else {
@@ -38,7 +64,7 @@ export const createRentedMobiliary = async (req: Request, res: Response) => {
 
 export const updateRentedMobiliary = async (req: Request, res: Response) => {
   try {
-    const rentedMobiliary = await RentedMobiliaryService.modifyRentedMobiliary(parseInt(req.params.id), req.body);
+    const rentedMobiliary = await RentedMobiliaryService.modifyRentedMobiliary(parseInt(req.params.rented_mobiliary_id), req.body);
     if (rentedMobiliary) {
       res.status(200).json(rentedMobiliary);
     } else {
@@ -51,7 +77,7 @@ export const updateRentedMobiliary = async (req: Request, res: Response) => {
 
 export const deleteRentedMobiliary = async (req: Request, res: Response) => {
   try {
-    const success = await RentedMobiliaryService.deleteRentedMobiliary(parseInt(req.params.id));
+    const success = await RentedMobiliaryService.deleteRentedMobiliary(parseInt(req.params.rented_mobiliary_id));
     if (success) {
       res.status(200).json({ message: 'Registro eliminado' });
     } else {

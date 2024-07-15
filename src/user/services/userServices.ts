@@ -1,5 +1,5 @@
 import { UserRepository } from "../repositories/UserRepository";
-import { User } from "../models/User";
+import { User, UserSummary } from "../models/User";
 import { DateUtils } from "../../shared/utils/DateUtils";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -8,31 +8,26 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const secretKey = process.env.SECRET || "";
-
-
 const saltRounds = 10;
 
-export class userService {
-
-    public static async login(name: string, password: string) {
+export class UserService {
+    public static async login(user_id: number, password: string) {
         try {
-            const user = await this.getUserByName(name);
+            const user = await this.getUserById(user_id);
             if (!user) {
                 return null;
             }
             const passwordMatch = await bcrypt.compare(password, user.password);
-
             if (!passwordMatch) {
                 return null;
             }
-
             const payload = {
                 user_id: user.user_id,
-                role: user.role,
-                name: user.name
-            }
-            return await jwt.sign(payload, secretKey, { expiresIn: '5m' });
-
+                role: user.role_user_id_fk,
+                firstname: user.firstname,
+                lastname: user.lastname
+            };
+            return await jwt.sign(payload, secretKey, { expiresIn: '1h' });
         } catch (error: any) {
             throw new Error(`Error al logearse: ${error.message}`);
         }
@@ -46,6 +41,14 @@ export class userService {
         }
     }
 
+    public static async getAllUsersSummaries(): Promise<UserSummary[]> {
+        try {
+            return await UserRepository.findAllSummaries();
+        } catch (error: any) {
+            throw new Error(`Error al obtener usuarios: ${error.message}`);
+        }
+    }
+
     public static async getUserById(userId: number): Promise<User | null> {
         try {
             return await UserRepository.findById(userId);
@@ -54,9 +57,9 @@ export class userService {
         }
     }
 
-    public static async getUserByName(name: string): Promise<User | null> {
+    public static async getUserByIdSummary(userId: number): Promise<UserSummary | null> {
         try {
-            return await UserRepository.findByName(name);
+            return await UserRepository.findByIdSummary(userId);
         } catch (error: any) {
             throw new Error(`Error al encontrar usuario: ${error.message}`);
         }
@@ -68,6 +71,7 @@ export class userService {
             user.created_at = DateUtils.formatDate(new Date());
             user.updated_at = DateUtils.formatDate(new Date());
             user.password = await bcrypt.hash(user.password, salt);
+            user.deleted = false;
             return await UserRepository.createUser(user);
         } catch (error: any) {
             throw new Error(`Error al crear usuario: ${error.message}`);
@@ -80,16 +84,22 @@ export class userService {
             const salt = await bcrypt.genSalt(saltRounds);
 
             if (userFinded) {
-                if (userData.name) {
-                    userFinded.name = userData.name;
+                if (userFinded.deleted && userData.deleted) {
+                    throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
+                }
+                if (userData.firstname) {
+                    userFinded.firstname = userData.firstname;
+                }
+                if (userData.lastname) {
+                    userFinded.lastname = userData.lastname;
                 }
                 if (userData.password) {
                     userFinded.password = await bcrypt.hash(userData.password, salt);
                 }
-                if (userData.role) {
-                    userFinded.role = userData.role;
+                if (userData.role_user_id_fk) {
+                    userFinded.role_user_id_fk = userData.role_user_id_fk;
                 }
-                if (userData.deleted) {
+                if (userFinded.deleted) {
                     userFinded.deleted = userData.deleted;
                 }
             } else {
@@ -110,5 +120,4 @@ export class userService {
             throw new Error(`Error al eliminar usuario: ${error.message}`);
         }
     }
-
 }

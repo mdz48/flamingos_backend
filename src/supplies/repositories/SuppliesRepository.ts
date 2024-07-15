@@ -1,6 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import connection from '../../shared/config/database';
-import { Supplies } from '../models/Supplies';
+import { Supplies, SuppliesSummary } from '../models/Supplies';
 
 export class SuppliesRepository {
 
@@ -11,6 +11,19 @@ export class SuppliesRepository {
                     reject(error);
                 } else {
                     const supplies: Supplies[] = results as Supplies[];
+                    resolve(supplies);
+                }
+            });
+        });
+    }
+
+    public static async findAllSummaries(): Promise<SuppliesSummary[]> {
+        return new Promise((resolve, reject) => {
+            connection.query('SELECT supplies_id, name, cost, description FROM supplies WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const supplies: SuppliesSummary[] = results as SuppliesSummary[];
                     resolve(supplies);
                 }
             });
@@ -34,10 +47,27 @@ export class SuppliesRepository {
         });
     }
 
-    public static async createSupplies(supplies: Supplies): Promise<Supplies> {
-        const query = 'INSERT INTO supplies (name, cost, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    public static async findByIdSummary(supplies_id: number): Promise<SuppliesSummary | null> {
         return new Promise((resolve, reject) => {
-            connection.execute(query, [supplies.name, supplies.cost, supplies.created_at, supplies.created_by, supplies.updated_at, supplies.updated_by, supplies.deleted], (error, result: ResultSetHeader) => {
+            connection.query('SELECT supplies_id, name, cost, description FROM supplies WHERE supplies_id = ? AND (deleted IS NULL OR deleted = FALSE)', [supplies_id], (error: any, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    const supplies: SuppliesSummary[] = results as SuppliesSummary[];
+                    if (supplies.length > 0) {
+                        resolve(supplies[0]);
+                    } else {
+                        resolve(null);
+                    }
+                }
+            });
+        });
+    }
+
+    public static async createSupplies(supplies: Supplies): Promise<Supplies> {
+        const query = 'INSERT INTO supplies (name, cost, description, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        return new Promise((resolve, reject) => {
+            connection.execute(query, [supplies.name, supplies.cost, supplies.description, supplies.created_at, supplies.created_by, supplies.updated_at, supplies.updated_by, supplies.deleted], (error, result: ResultSetHeader) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -50,9 +80,9 @@ export class SuppliesRepository {
     }
 
     public static async updateSupplies(supplies_id: number, suppliesData: Supplies): Promise<Supplies | null> {
-        const query = 'UPDATE supplies SET name = ?, cost = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE supplies_id = ?';
+        const query = 'UPDATE supplies SET name = ?, cost = ?, description = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE supplies_id = ?';
         return new Promise((resolve, reject) => {
-            connection.execute(query, [suppliesData.name, suppliesData.cost, suppliesData.updated_at, suppliesData.updated_by, suppliesData.deleted, supplies_id], (error, result: ResultSetHeader) => {
+            connection.execute(query, [suppliesData.name, suppliesData.cost, suppliesData.description, suppliesData.updated_at, suppliesData.updated_by, suppliesData.deleted, supplies_id], (error, result: ResultSetHeader) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -68,17 +98,13 @@ export class SuppliesRepository {
     }
 
     public static async deleteSupplies(supplies_id: number): Promise<boolean> {
-        const query = 'DELETE FROM supplies WHERE supplies_id = ?';
+        const query = 'UPDATE supplies SET deleted = TRUE WHERE supplies_id = ?';
         return new Promise((resolve, reject) => {
             connection.execute(query, [supplies_id], (error, result: ResultSetHeader) => {
                 if (error) {
                     reject(error);
                 } else {
-                    if (result.affectedRows > 0) {
-                        resolve(true); // Eliminación exitosa
-                    } else {
-                        resolve(false); // Si no se encontró el suministro a eliminar
-                    }
+                    resolve(result.affectedRows > 0);
                 }
             });
         });

@@ -1,6 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import connection from '../../shared/config/database';
-import { Salon } from '../models/Salon';
+import { Salon, SalonSummary } from '../models/Salon';
 
 export class SalonRepository {
 
@@ -10,8 +10,21 @@ export class SalonRepository {
         if (error) {
           reject(error);
         } else {
-          const salon: Salon[] = results as Salon[];
-          resolve(salon);
+          const salons: Salon[] = results as Salon[];
+          resolve(salons);
+        }
+      });
+    });
+  }
+
+  public static async findAllSummaries(): Promise<SalonSummary[]> {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT salon_id, name, capacity, description FROM salon WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          const salons: SalonSummary[] = results as SalonSummary[];
+          resolve(salons);
         }
       });
     });
@@ -23,9 +36,26 @@ export class SalonRepository {
         if (error) {
           reject(error);
         } else {
-          const salon: Salon[] = results as Salon[];
-          if (salon.length > 0) {
-            resolve(salon[0]);
+          const salons: Salon[] = results as Salon[];
+          if (salons.length > 0) {
+            resolve(salons[0]);
+          } else {
+            resolve(null);
+          }
+        }
+      });
+    });
+  }
+
+  public static async findByIdSummary(salon_id: number): Promise<SalonSummary | null> {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT salon_id, name, capacity, description FROM salon WHERE salon_id = ? AND (deleted IS NULL OR deleted = FALSE)', [salon_id], (error: any, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          const salons: SalonSummary[] = results as SalonSummary[];
+          if (salons.length > 0) {
+            resolve(salons[0]);
           } else {
             resolve(null);
           }
@@ -35,10 +65,9 @@ export class SalonRepository {
   }
 
   public static async createSalon(salon: Salon): Promise<Salon> {
-    const query = 'INSERT INTO salon (capacity, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?)';
-    console.log(salon);
+    const query = 'INSERT INTO salon (name, capacity, description, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [salon.capacity, salon.created_at, salon.created_by, salon.updated_at, salon.updated_by, salon.deleted], (error, result: ResultSetHeader) => {
+      connection.execute(query, [salon.name, salon.capacity, salon.description, salon.created_at, salon.created_by, salon.updated_at, salon.updated_by, salon.deleted], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {
@@ -51,9 +80,9 @@ export class SalonRepository {
   }
 
   public static async updateSalon(salon_id: number, salonData: Salon): Promise<Salon | null> {
-    const query = 'UPDATE salon SET capacity = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE salon_id = ?';
+    const query = 'UPDATE salon SET name = ?, capacity = ?, description = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE salon_id = ?';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [salonData.capacity, salonData.updated_at, salonData.updated_by, salonData.deleted, salon_id], (error, result: ResultSetHeader) => {
+      connection.execute(query, [salonData.name, salonData.capacity, salonData.description, salonData.updated_at, salonData.updated_by, salonData.deleted, salon_id], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {
@@ -69,20 +98,15 @@ export class SalonRepository {
   }
 
   public static async deleteSalon(salon_id: number): Promise<boolean> {
-    const query = 'DELETE FROM salon WHERE salon_id = ?';
+    const query = 'UPDATE salon SET deleted = TRUE WHERE salon_id = ?';
     return new Promise((resolve, reject) => {
       connection.execute(query, [salon_id], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {
-          if (result.affectedRows > 0) {
-            resolve(true); // Eliminación exitosa
-          } else {
-            resolve(false); // Si no se encontró el usuario a eliminar
-          }
+          resolve(result.affectedRows > 0);
         }
       });
     });
   }
-
 }

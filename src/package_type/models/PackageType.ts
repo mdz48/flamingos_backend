@@ -1,8 +1,9 @@
-export interface Supplies{
-    supplies_id: number | null;
+export interface PackageType {
+    package_type_id: number;
     name: string;
     cost: number;
-    description: string | null;
+    description: string;
+    precreated: boolean | null;
     created_at: String;
     created_by: string;
     updated_at: String;
@@ -10,8 +11,8 @@ export interface Supplies{
     deleted: boolean | null;
 }
 
-export interface SuppliesSummary {
-    supplies_id: number | null;
+export interface PackageTypeSummary {
+    package_type_id: number;
     name: string;
     cost: number;
     description: string;

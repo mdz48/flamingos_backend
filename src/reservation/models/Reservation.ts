@@ -1,17 +1,24 @@
 export interface Reservation {
     reservation_id: number | null;
     salon_id_fk: number;
-    mobiliary_id_fk: number;
     client_id_fk: number;
-    guest_count: number;
-    package_type: string;
-    mobiliary_quantity: number;
-    food_type: string;
-    event_datetime: String;
+    package_type_id_fk: number;
+    guest_amount: number;
+    event_date: String;
     event_type: string;
     created_at: String;
     created_by: string;
     updated_at: String;
     updated_by: string;
-    deleted: boolean;
+    deleted: boolean | null;
+}
+
+export interface ReservationSumary {
+    reservation_id: number | null;
+    salon_id_fk: number;
+    client_id_fk: number;
+    package_type_id_fk: number;
+    guest_amount: number;
+    event_date: String;
+    event_type: string;
 }
