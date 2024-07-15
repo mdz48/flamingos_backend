@@ -36,6 +36,19 @@ export const getClientById = async (req: Request, res: Response) => {
   }
 };
 
+export const getClientByIdSummaries = async (req: Request, res: Response) => {
+  try {
+    const client = await ClientService.getClientByIdSummaries(parseInt(req.params.client_id, 10));
+    if (client) {
+      res.status(201).json(client);
+    } else {
+      res.status(404).json({ message: 'No se encontró el cliente' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const createClient = async (req: Request, res: Response) => {
   try {
     const newClient = await ClientService.addClient(req.body);

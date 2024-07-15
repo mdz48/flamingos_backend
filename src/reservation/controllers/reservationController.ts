@@ -1,11 +1,25 @@
 import { Request, Response } from 'express';
 import { ReservationService } from '../services/reservationService';
+import { Reservation, ReservationSumary } from '../models/Reservation';
 
 export const getReservations = async (_req: Request, res: Response) => {
     try {
         const reservations = await ReservationService.getAllReservations();
-        if (reservations) {
+        if (reservations.length > 0) {
             res.status(200).json(reservations);
+        } else {
+            res.status(404).json({ message: 'Sin registros' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getReservationSummaries = async (_req: Request, res: Response) => {
+    try {
+        const summaries = await ReservationService.getAllReservationSummaries();
+        if (summaries.length > 0) {
+            res.status(200).json(summaries);
         } else {
             res.status(404).json({ message: 'Sin registros' });
         }
@@ -16,7 +30,8 @@ export const getReservations = async (_req: Request, res: Response) => {
 
 export const getReservationById = async (req: Request, res: Response) => {
     try {
-        const reservation = await ReservationService.getReservationById(parseInt(req.params.reservation_id, 10));
+        const reservation_id = parseInt(req.params.reservation_id, 10);
+        const reservation = await ReservationService.getReservationById(reservation_id);
         if (reservation) {
             res.status(200).json(reservation);
         } else {
@@ -27,14 +42,25 @@ export const getReservationById = async (req: Request, res: Response) => {
     }
 };
 
+export const getReservationByIdSummary = async (req: Request, res: Response) => {
+    try {
+        const reservation_id = parseInt(req.params.reservation_id, 10);
+        const summary = await ReservationService.getReservationByIdSummary(reservation_id);
+        if (summary) {
+            res.status(200).json(summary);
+        } else {
+            res.status(404).json({ message: 'No se encontró la reservación' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export const createReservation = async (req: Request, res: Response) => {
     try {
-        const newReservation = await ReservationService.addReservation(req.body);
-        if (newReservation) {
-            res.status(201).json(newReservation);
-        } else {
-            res.status(400).json({ message: 'Algo salió mal' });
-        }
+        const newReservation: Reservation = req.body;
+        const createdReservation = await ReservationService.addReservation(newReservation);
+        res.status(201).json(createdReservation);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
@@ -42,11 +68,13 @@ export const createReservation = async (req: Request, res: Response) => {
 
 export const updateReservation = async (req: Request, res: Response) => {
     try {
-        const updatedReservation = await ReservationService.modifyReservation(parseInt(req.params.reservation_id, 10), req.body);
+        const reservation_id = parseInt(req.params.reservation_id, 10);
+        const reservationData: Reservation = req.body;
+        const updatedReservation = await ReservationService.modifyReservation(reservation_id, reservationData);
         if (updatedReservation) {
             res.status(200).json(updatedReservation);
         } else {
-            res.status(400).json({ message: 'Algo salió mal' });
+            res.status(404).json({ message: 'No se encontró la reservación o está deshabilitada' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -55,11 +83,12 @@ export const updateReservation = async (req: Request, res: Response) => {
 
 export const deleteReservation = async (req: Request, res: Response) => {
     try {
-        const deleted = await ReservationService.deleteReservation(parseInt(req.params.reservation_id, 10));
+        const reservation_id = parseInt(req.params.reservation_id, 10);
+        const deleted = await ReservationService.deleteReservation(reservation_id);
         if (deleted) {
-            res.status(200).json({ message: 'Reservación eliminada' });
+            res.status(200).json({ message: 'Se eliminó la reservación.' });
         } else {
-            res.status(404).json({ message: 'No se encontró la reservación' });
+            res.status(404).json({ message: 'No se encontró la reservación o está deshabilitada' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });

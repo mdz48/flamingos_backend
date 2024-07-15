@@ -14,9 +14,35 @@ export const getSalons = async (_req: Request, res: Response) => {
   }
 };
 
+export const getSalonsSummaries = async (_req: Request, res: Response) => {
+  try {
+    const salons = await salonService.getAllSalonSummaries();
+    if (salons) {
+      res.status(200).json(salons);
+    } else {
+      res.status(404).json({ message: 'Sin registros' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getSalonById = async (req: Request, res: Response) => {
   try {
     const salon = await salonService.getSalonById(parseInt(req.params.salon_id, 10));
+    if (salon) {
+      res.status(200).json(salon);
+    } else {
+      res.status(404).json({ message: 'No se encontró el salón' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getSalonByIdSummaries = async (req: Request, res: Response) => {
+  try {
+    const salon = await salonService.getSalonByIdSummary(parseInt(req.params.salon_id, 10));
     if (salon) {
       res.status(200).json(salon);
     } else {

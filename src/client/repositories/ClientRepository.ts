@@ -20,7 +20,7 @@ export class ClientRepository {
 
   public static async findAllSummaries(): Promise<ClientSummary[]> {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT client_id, firstname, lastname, cellphone FROM client', (error: any, results) => {
+      connection.query('SELECT client_id, firstname, lastname, cellphone FROM client WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
         if (error) {
           reject(error);
         } else {
@@ -38,6 +38,23 @@ export class ClientRepository {
           reject(error);
         } else {
           const clients: Client[] = results as Client[];
+          if (clients.length > 0) {
+            resolve(clients[0]);
+          } else {
+            resolve(null);
+          }
+        }
+      });
+    });
+  }
+
+  public static async findByIdSummary(client_id: number): Promise<ClientSummary | null> {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT client_id, firstname, lastname, cellphone FROM client WHERE client_id = ? AND (deleted IS NULL OR deleted = FALSE)', [client_id], (error: any, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          const clients: ClientSummary[] = results as ClientSummary[];
           if (clients.length > 0) {
             resolve(clients[0]);
           } else {
@@ -82,7 +99,7 @@ export class ClientRepository {
   }
 
   public static async deleteClient(client_id: number): Promise<boolean> {
-    const query = 'DELETE FROM client WHERE client_id = ?';
+    const query = 'UPDATE client SET deleted = TRUE WHERE client_id = ?';
     return new Promise((resolve, reject) => {
       connection.execute(query, [client_id], (error, result: ResultSetHeader) => {
         if (error) {

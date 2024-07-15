@@ -40,6 +40,19 @@ export const getMobiliaryById = async (req: Request, res: Response) => {
   }
 };
 
+export const getMobiliaryByIdSummaries = async (req: Request, res: Response) => {
+  try {
+    const mobiliary = await MobiliaryService.getMobiliaryByIdSummaries(parseInt(req.params.mobiliary_id, 10));
+    if (mobiliary) {
+      res.status(201).json(mobiliary);
+    } else {
+      res.status(404).json({ message: 'No se encontró el mobiliario' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const createMobiliary = async (req: Request, res: Response) => {
   try {
     const newMobiliary = await MobiliaryService.addMobiliary(req.body);
