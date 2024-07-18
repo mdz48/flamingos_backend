@@ -17,3 +17,19 @@ export interface PackageTypeSummary {
     cost: number;
     description: string;
 }
+
+export interface PackageTypeSupplies {
+    package_type_supplies_id: number;
+    supplies_id_fk: number;
+    package_type_id_fk: number;
+    supplies_quantity: number;
+  }
+
+  export interface PackageTypeMobiliary {
+    package_type_mobiliary_id: number;
+    mobiliary_id_fk: number;
+    package_type_id_fk: number;
+    mobiliary_quantity: number;
+  }
+
+  

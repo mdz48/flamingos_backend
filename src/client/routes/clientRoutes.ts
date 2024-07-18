@@ -4,7 +4,7 @@ import { authMiddleware } from '../../shared/middlewares/auth';
 
 const clientRoutes: Router = Router();
 
-clientRoutes.get('/',  getClients);
+clientRoutes.get('/', authMiddleware, getClients);
 clientRoutes.get('/summaries',  getClientSummaries);
 clientRoutes.get('/:client_id', getClientById);
 clientRoutes.get('/:client_id/summaries', getClientByIdSummaries);

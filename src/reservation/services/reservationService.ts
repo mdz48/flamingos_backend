@@ -1,5 +1,5 @@
 import { ReservationRepository } from '../repositories/ReservationRepository';
-import { Reservation, ReservationSumary } from '../models/Reservation';
+import { Reservation, ReservationSummary } from '../models/Reservation';
 import { DateUtils } from '../../shared/utils/DateUtils';
 
 export class ReservationService {
@@ -20,7 +20,7 @@ export class ReservationService {
     }
   }
 
-  public static async getAllReservationSummaries(): Promise<ReservationSumary[]> {
+  public static async getAllReservationSummaries(): Promise<ReservationSummary[]> {
     try {
       return await ReservationRepository.findAllSummaries();
     } catch (error: any) {
@@ -28,7 +28,7 @@ export class ReservationService {
     }
   }
 
-  public static async getReservationByIdSummary(reservation_id: number): Promise<ReservationSumary | null> {
+  public static async getReservationByIdSummary(reservation_id: number): Promise<ReservationSummary | null> {
     try {
       return await ReservationRepository.findByIdSummary(reservation_id);
     } catch (error: any) {

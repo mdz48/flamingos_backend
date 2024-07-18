@@ -12,6 +12,22 @@ export class MobiliaryService {
         }
     }
 
+    public static async reduceStock(mobiliaryId: number, quantity: number): Promise<void> {
+        try {
+            const mobiliary = await MobiliaryRepository.findById(mobiliaryId);
+            if (!mobiliary) {
+                throw new Error('Mobiliario no encontrado');
+            }
+            if (mobiliary.available_stock < quantity) {
+                throw new Error('Stock insuficiente');
+            }
+            mobiliary.available_stock -= quantity;
+            await MobiliaryRepository.updateMobiliary(mobiliaryId, mobiliary);
+        } catch (error: any) {
+            throw new Error(`Error al reducir el stock del mobiliario: ${error.message}`);
+        }
+    }
+
     public static async getAllMobiliarySummaries(): Promise<MobiliarySummary[]> {
         try {
             return await MobiliaryRepository.findAllSummaries();

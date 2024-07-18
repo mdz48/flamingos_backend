@@ -4,7 +4,7 @@ import { RentedMobiliaryService } from '../services/rentedMobiliaryService';
 export const getRentedMobiliary = async (_req: Request, res: Response) => {
   try {
     const rentedMobiliary = await RentedMobiliaryService.getAllRentedMobiliary();
-    if (rentedMobiliary) {
+    if (rentedMobiliary.length > 0) {
       res.status(200).json(rentedMobiliary);
     } else {
       res.status(404).json({ message: 'Sin registros' });
@@ -17,7 +17,7 @@ export const getRentedMobiliary = async (_req: Request, res: Response) => {
 export const getRentedMobiliarySummaries = async (_req: Request, res: Response) => {
   try {
     const rentedMobiliary = await RentedMobiliaryService.getAllRentedMobiliarySummaries();
-    if (rentedMobiliary) {
+    if (rentedMobiliary.length > 0) {
       res.status(200).json(rentedMobiliary);
     } else {
       res.status(404).json({ message: 'Sin registros' });

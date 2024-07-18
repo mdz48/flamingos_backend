@@ -1,6 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import connection from '../../shared/config/database';
-import { Reservation, ReservationSumary } from '../models/Reservation';
+import { Reservation, ReservationSummary } from '../models/Reservation';
 
 export class ReservationRepository {
 
@@ -17,13 +17,13 @@ export class ReservationRepository {
     });
   }
 
-  public static async findAllSummaries(): Promise<ReservationSumary[]> {
+  public static async findAllSummaries(): Promise<ReservationSummary[]> {
     return new Promise((resolve, reject) => {
       connection.query('SELECT reservation_id, salon_id_fk, client_id_fk, package_type_id_fk, guest_amount, event_date, event_type FROM reservation WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
         if (error) {
           reject(error);
         } else {
-          const reservationSummaries: ReservationSumary[] = results as ReservationSumary[];
+          const reservationSummaries: ReservationSummary[] = results as ReservationSummary[];
           resolve(reservationSummaries);
         }
       });
@@ -47,13 +47,13 @@ export class ReservationRepository {
     });
   }
 
-  public static async findByIdSummary(reservation_id: number): Promise<ReservationSumary | null> {
+  public static async findByIdSummary(reservation_id: number): Promise<ReservationSummary | null> {
     return new Promise((resolve, reject) => {
       connection.query('SELECT reservation_id, salon_id_fk, client_id_fk, package_type_id_fk, guest_amount, event_date, event_type FROM reservation WHERE reservation_id = ? AND (deleted IS NULL OR deleted = FALSE)', [reservation_id], (error: any, results) => {
         if (error) {
           reject(error);
         } else {
-          const reservationSummaries: ReservationSumary[] = results as ReservationSumary[];
+          const reservationSummaries: ReservationSummary[] = results as ReservationSummary[];
           if (reservationSummaries.length > 0) {
             resolve(reservationSummaries[0]);
           } else {
