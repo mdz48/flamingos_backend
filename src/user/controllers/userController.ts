@@ -1,12 +1,18 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/userServices';
+import jwt from 'jsonwebtoken';
+import { UserPayload } from '../../shared/config/types/userPayLoad';
+const secretKey = process.env.SECRET || "";
 
 export const login = async (req: Request, res: Response) => {
     try {
         const { user_id, password } = req.body;
         const token = await UserService.login(user_id, password);
         if (token) {
-            res.status(200).json({ token });
+            const  user = jwt.verify(token, secretKey) as UserPayload;
+            res.setHeader('Authorization', token);
+            res.setHeader('Access-Control-Expose-Headers', 'Authorization');
+            res.status(200).json({ token, user });
         } else {
             res.status(401).json({ message: 'Credenciales incorrectas' });
         }
