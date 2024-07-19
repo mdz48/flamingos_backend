@@ -1,9 +1,10 @@
 export interface Mobiliary {
     mobiliary_id: number | null;
+    salon_id_fk: number;
     name: string;
     stock: number;
     state: string;
-    available_stock: number;
+    description: string | null;
     created_at: String;
     created_by: string;
     updated_at: String;
@@ -13,8 +14,9 @@ export interface Mobiliary {
 
 export interface MobiliarySummary {
     mobiliary_id: number | null;
+    salon_id_fk: number;
     name: string;
     stock: number;
     state: string;
-    available_stock: number;
+    description: string;
 }

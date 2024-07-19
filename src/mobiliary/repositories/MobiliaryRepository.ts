@@ -19,7 +19,7 @@ export class MobiliaryRepository {
 
   public static async findAllSummaries(): Promise<MobiliarySummary[]> {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT mobiliary_id, name, stock, state, available_stock FROM mobiliary WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
+      connection.query('SELECT mobiliary_id, salon_id_fk, name, stock, state, description FROM mobiliary WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
         if (error) {
           reject(error);
         } else {
@@ -49,7 +49,7 @@ export class MobiliaryRepository {
 
   public static async findByIdSummary(mobiliary_id: number): Promise<MobiliarySummary | null> {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT mobiliary_id, name, stock, state, available_stock FROM mobiliary WHERE mobiliary_id = ? AND (deleted IS NULL OR deleted = FALSE)', [mobiliary_id], (error: any, results) => {
+      connection.query('SELECT mobiliary_id, salon_id_fk, name, stock, state, description FROM mobiliary WHERE mobiliary_id = ? AND (deleted IS NULL OR deleted = FALSE)', [mobiliary_id], (error: any, results) => {
         if (error) {
           reject(error);
         } else {
@@ -65,9 +65,9 @@ export class MobiliaryRepository {
   }
 
   public static async createMobiliary(mobiliary: Mobiliary): Promise<Mobiliary> {
-    const query = 'INSERT INTO mobiliary (name, stock, state, available_stock, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO mobiliary (salon_id_fk, name, stock, state, description, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [mobiliary.name, mobiliary.stock, mobiliary.state, mobiliary.available_stock, mobiliary.created_at, mobiliary.created_by, mobiliary.updated_at, mobiliary.updated_by, mobiliary.deleted], (error, result: ResultSetHeader) => {
+      connection.execute(query, [mobiliary.salon_id_fk, mobiliary.name, mobiliary.stock, mobiliary.state, mobiliary.description, mobiliary.created_at, mobiliary.created_by, mobiliary.updated_at, mobiliary.updated_by, mobiliary.deleted], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {
@@ -80,9 +80,9 @@ export class MobiliaryRepository {
   }
 
   public static async updateMobiliary(mobiliary_id: number, mobiliaryData: Mobiliary): Promise<Mobiliary | null> {
-    const query = 'UPDATE mobiliary SET name = ?, stock = ?, state = ?, available_stock = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE mobiliary_id = ?';
+    const query = 'UPDATE mobiliary SET salon_id_fk = ?, name = ?, stock = ?, state = ?, description = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE mobiliary_id = ?';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [mobiliaryData.name, mobiliaryData.stock, mobiliaryData.state, mobiliaryData.available_stock, mobiliaryData.updated_at, mobiliaryData.updated_by, mobiliaryData.deleted, mobiliary_id], (error, result: ResultSetHeader) => {
+      connection.execute(query, [mobiliaryData.salon_id_fk, mobiliaryData.name, mobiliaryData.stock, mobiliaryData.state, mobiliaryData.description, mobiliaryData.updated_at, mobiliaryData.updated_by, mobiliaryData.deleted, mobiliary_id], (error, result: ResultSetHeader) => {
         if (error) {
           reject(error);
         } else {

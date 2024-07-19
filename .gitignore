@@ -9,7 +9,7 @@ node_modules/
 /.vscode
 .history/*
 .env
-
+.idea
 
 npm-debug.log*
 yarn-debug.log*

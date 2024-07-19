@@ -57,7 +57,6 @@ export class MobiliaryService {
                 mobiliaryFound.name = mobiliaryData.name || mobiliaryFound.name;
                 mobiliaryFound.stock = mobiliaryData.stock || mobiliaryFound.stock;
                 mobiliaryFound.state = mobiliaryData.state || mobiliaryFound.state;
-                mobiliaryFound.available_stock = mobiliaryData.available_stock || mobiliaryFound.available_stock;
                 if (mobiliaryFound.deleted) {
                     mobiliaryFound.deleted = mobiliaryData.deleted;
                 }
