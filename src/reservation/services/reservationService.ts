@@ -41,7 +41,7 @@ export class ReservationService {
       reservation.created_at = DateUtils.formatDate(new Date());
       reservation.updated_at = DateUtils.formatDate(new Date());
       reservation.deleted = false;
-      return await ReservationRepository.createReservation(reservation);
+      return await ReservationRepository.createReservationWithSupplies(reservation);
     } catch (error: any) {
       throw new Error(`Error al crear la reservación: ${error.message}`);
     }

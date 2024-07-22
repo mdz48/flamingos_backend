@@ -1,8 +1,76 @@
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import connection from '../../shared/config/database';
 import { Reservation, ReservationSumary } from '../models/Reservation';
+import pool from '../../shared/config/databasePromise';
+import { PackageTypeSupplies } from '../models/PackageTypeSupplies';
 
 export class ReservationRepository {
+
+  public static async createReservationWithSupplies(reservation: Reservation): Promise<Reservation> {
+    const createReservationQuery = `
+      INSERT INTO reservation (
+        salon_id_fk, client_id_fk, package_type_id_fk, guest_amount, event_date, event_type, 
+        created_at, created_by, updated_at, updated_by, deleted
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const getSuppliesQuery = `
+      SELECT supplies_id, name, cost, description 
+      FROM supplies;
+    `;
+
+    const insertPackageTypeSuppliesQuery = `
+      INSERT INTO package_type_supplies (
+        package_type_id_fk, supplies_id_fk, supplies_quantity
+      ) VALUES (?, ?, ?);
+    `;
+
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      // Insert the reservation
+      const [reservationResult] = await connection.execute<ResultSetHeader>(createReservationQuery, [
+        reservation.salon_id_fk, reservation.client_id_fk, reservation.package_type_id_fk,
+        reservation.guest_amount, reservation.event_date, reservation.event_type,
+        reservation.created_at, reservation.created_by, reservation.updated_at,
+        reservation.updated_by, reservation.deleted
+      ]);
+
+      const createdReservationId = reservationResult.insertId;
+      const createdReservation: Reservation = { ...reservation, reservation_id: createdReservationId };
+
+      // Get the supplies
+      const [supplies] = await connection.execute<RowDataPacket[]>(getSuppliesQuery);
+
+      // Insert the supplies into the package_type_supplies table
+      for (const supply of supplies) {
+        await connection.execute(insertPackageTypeSuppliesQuery, [
+          reservation.package_type_id_fk, supply.supplies_id, reservation.guest_amount // Using guest_amount as supplies_quantity
+        ]);
+      }
+
+      // Commit the transaction
+      await connection.commit();
+      return createdReservation;
+    } catch (error) {
+      // Rollback the transaction in case of an error
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error('Error during transaction rollback:', rollbackError);
+      }
+
+      if (error instanceof Error) {
+        throw new Error(`Error al crear la reservación con suministros: ${error.message}`);
+      } else {
+        throw new Error('Error desconocido al crear la reservación con suministros');
+      }
+    } finally {
+      connection.release();
+    }
+  }
 
   public static async findAll(): Promise<Reservation[]> {
     return new Promise((resolve, reject) => {
