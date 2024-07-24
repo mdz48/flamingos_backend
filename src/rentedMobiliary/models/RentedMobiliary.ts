@@ -19,6 +19,6 @@ export interface RentedMobiliarySummary {
     description: string;
     rental_cost: number;
     rented_by: string;
-    rental_start_date: String;
-    rental_end_date: String;
+    rental_start_date: string;
+    rental_end_date: string;
 }

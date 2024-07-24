@@ -14,11 +14,17 @@ export class RentedMobiliaryService {
 
   public static async getAllRentedMobiliarySummaries(): Promise<RentedMobiliarySummary[]> {
     try {
-      return await RentedMobiliaryRepository.findAllSummaries();
+      const summaries = await RentedMobiliaryRepository.findAllSummaries();
+      return summaries.map(summary => ({
+        ...summary,
+        rental_start_date: DateUtils.formatDateOnly(new Date(summary.rental_start_date)),
+        rental_end_date: DateUtils.formatDateOnly(new Date(summary.rental_end_date))
+      }));
     } catch (error: any) {
       throw new Error(`Error al obtener mobiliario rentado: ${error.message}`);
     }
   }
+  
 
   public static async getRentedMobiliaryById(rented_mobiliary_id: number): Promise<RentedMobiliary | null> {
     try {

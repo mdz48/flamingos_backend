@@ -19,6 +19,6 @@ export interface ReservationSumary {
     client_id_fk: number;
     package_type_id_fk: number;
     guest_amount: number;
-    event_date: String;
+    event_date: string;
     event_type: string;
 }

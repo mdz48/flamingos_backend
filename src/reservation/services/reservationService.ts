@@ -22,7 +22,12 @@ export class ReservationService {
 
   public static async getAllReservationSummaries(): Promise<ReservationSumary[]> {
     try {
-      return await ReservationRepository.findAllSummaries();
+      const summaries = await ReservationRepository.findAllSummaries();
+      // Formatear las fechas en cada resumen antes de devolver
+      return summaries.map(summary => ({
+        ...summary,
+        event_date: DateUtils.formatDateOnly(new Date(summary.event_date)),
+      }));
     } catch (error: any) {
       throw new Error(`Error al obtener los resúmenes de reservaciones: ${error.message}`);
     }
@@ -36,12 +41,12 @@ export class ReservationService {
     }
   }
 
-  public static async addReservation(reservation: Reservation): Promise<Reservation> {
+  public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string } > {
     try {
       reservation.created_at = DateUtils.formatDate(new Date());
       reservation.updated_at = DateUtils.formatDate(new Date());
       reservation.deleted = false;
-      return await ReservationRepository.createReservation(reservation);
+      return await ReservationRepository.addReservation(reservation);
     } catch (error: any) {
       throw new Error(`Error al crear la reservación: ${error.message}`);
     }

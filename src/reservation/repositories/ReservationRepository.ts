@@ -64,6 +64,39 @@ export class ReservationRepository {
     });
   }
 
+  public static async checkReservationExists(eventDate: String): Promise<boolean> {
+    const query = 'SELECT COUNT(*) AS count FROM reservation WHERE event_date = ? AND deleted = false';
+    return new Promise((resolve, reject) => {
+      connection.execute(query, [eventDate], (error, results: any[]) => {
+        if (error) {
+          reject(error);
+        } else {
+          const count = results[0].count;
+          resolve(count > 0);
+        }
+      });
+    });
+  }
+
+  public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
+    try {
+      // Verificar si ya existe una reserva en la misma fecha
+      const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date);
+  
+      if (reservationExists) {
+        return { message: 'Ya existe una reserva para esta fecha.' };
+      }
+  
+      reservation.created_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      reservation.updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      reservation.deleted = false;
+      return await ReservationRepository.createReservation(reservation);
+    } catch (error: any) {
+      throw new Error(`Error al crear la reservación: ${error.message}`);
+    }
+  }
+  
+  
   public static async createReservation(reservation: Reservation): Promise<Reservation> {
     const query = 'INSERT INTO reservation (salon_id_fk, client_id_fk, package_type_id_fk, guest_amount, event_date, event_type, created_at, created_by, updated_at, updated_by, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     return new Promise((resolve, reject) => {
