@@ -99,7 +99,7 @@ export class ClientRepository {
   }
 
   public static async deleteClient(client_id: number): Promise<boolean> {
-    const query = 'UPDATE client SET deleted = TRUE WHERE client_id = ?';
+    const query = 'UPDATE client SET deleted = TRUE WHERE client_id = ? AND deleted = false';
     return new Promise((resolve, reject) => {
       connection.execute(query, [client_id], (error, result: ResultSetHeader) => {
         if (error) {

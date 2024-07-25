@@ -85,7 +85,7 @@ export const deleteSalon = async (req: Request, res: Response) => {
     if (deleted) {
       res.status(200).json({ message: 'Se eliminó el salón.' });
     } else {
-      res.status(404).json({ message: 'Algo salió mal' });
+      res.status(404).json({ message: 'Registro no encontrado' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });

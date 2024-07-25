@@ -98,7 +98,7 @@ export class SuppliesRepository {
     }
 
     public static async deleteSupplies(supplies_id: number): Promise<boolean> {
-        const query = 'UPDATE supplies SET deleted = TRUE WHERE supplies_id = ?';
+        const query = 'UPDATE supplies SET deleted = TRUE WHERE supplies_id = ? AND deleted = false';
         return new Promise((resolve, reject) => {
             connection.execute(query, [supplies_id], (error, result: ResultSetHeader) => {
                 if (error) {

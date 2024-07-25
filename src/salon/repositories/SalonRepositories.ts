@@ -98,7 +98,7 @@ export class SalonRepository {
   }
 
   public static async deleteSalon(salon_id: number): Promise<boolean> {
-    const query = 'UPDATE salon SET deleted = TRUE WHERE salon_id = ?';
+    const query = 'UPDATE salon SET deleted = TRUE WHERE salon_id = ? AND deleted = false';
     return new Promise((resolve, reject) => {
       connection.execute(query, [salon_id], (error, result: ResultSetHeader) => {
         if (error) {

@@ -66,7 +66,7 @@ export const getUserByIdSummary = async (req: Request, res: Response) => {
         if (user) {
             res.status(200).json(user);
         } else {
-            res.status(404).json({ message: 'No se encontró el resumen del usuario' });
+            res.status(404).json({ message: 'No se encontró el usuario' });
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });

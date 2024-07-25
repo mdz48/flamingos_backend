@@ -121,7 +121,7 @@ export class RentedMobiliaryRepository {
   }
 
   public static async deleteRentedMobiliary(rentedMobiliary_id: number): Promise<boolean> {
-    const query = 'UPDATE rented_mobiliary SET deleted = TRUE WHERE rented_mobiliary_id = ?';
+    const query = 'UPDATE rented_mobiliary SET deleted = TRUE WHERE rented_mobiliary_id = ? AND deleted = false';
     return new Promise((resolve, reject) => {
       connection.execute(query, [rentedMobiliary_id], (error, result: ResultSetHeader) => {
         if (error) {

@@ -15,4 +15,20 @@ export class DateUtils {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+  public static isDateOnOrAfterToday(date: Date): boolean {
+    const today = new Date();
+
+    // Crear nuevas fechas solo con la parte de la fecha (año, mes y día) en la zona horaria local
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const inputDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    console.log('Today:', todayDateOnly);
+    console.log('Input Date:', inputDateOnly);
+
+    return inputDateOnly >= todayDateOnly;
+}
+
+
+
 }

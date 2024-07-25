@@ -114,7 +114,7 @@ export class UserRepository {
     }
 
     public static async deleteUser(user_id: number): Promise<boolean> {
-        const query = 'UPDATE user SET deleted = TRUE WHERE user_id = ?';
+        const query = 'UPDATE user SET deleted = TRUE WHERE user_id = ? AND deleted = false';
         return new Promise((resolve, reject) => {
             connection.execute(query, [user_id], (error, result: ResultSetHeader) => {
                 if (error) {

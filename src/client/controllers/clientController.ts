@@ -55,7 +55,7 @@ export const createClient = async (req: Request, res: Response) => {
     if (newClient) {
       res.status(201).json(newClient);
     } else {
-      res.status(404).json({ message: 'Algo salió mal' });
+      res.status(400).json({ message: 'Algo salió mal' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -68,7 +68,7 @@ export const updateClient = async (req: Request, res: Response) => {
     if (updatedClient) {
       res.status(201).json(updatedClient);
     } else {
-      res.status(404).json({ message: 'Algo salió mal' });
+      res.status(400).json({ message: 'Algo salió mal' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -81,7 +81,7 @@ export const deleteClient = async (req: Request, res: Response) => {
     if (deleted) {
       res.status(201).json({ message: 'Se eliminó el cliente.' });
     } else {
-      res.status(404).json({ message: 'Algo salió mal' });
+      res.status(404).json({ message: 'Registro no encontrado' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
