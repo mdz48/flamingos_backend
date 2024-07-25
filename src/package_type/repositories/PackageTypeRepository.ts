@@ -131,4 +131,19 @@ export class PackageTypeRepository {
       });
     });
   }
+
+  public static async deletePibotDataByPackageTypeId(packageTypeId: number): Promise<boolean> {
+    const deleteQuery = `DELETE FROM package_type_supplies WHERE package_type_id_fk = ?`;
+    return new Promise((resolve, reject) => {
+      connection.execute(deleteQuery, [packageTypeId], (error, result: ResultSetHeader) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result.affectedRows > 0);
+        }
+      });
+    });
+  }
 }
+
+

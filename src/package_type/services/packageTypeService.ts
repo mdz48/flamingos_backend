@@ -66,6 +66,7 @@ export class PackageTypeService {
     public static async modifyPackageType(package_type_id: number, packageTypeData: PackageType){
         try{
             const packageTypeFound =  await PackageTypeRepository.findById(package_type_id);
+            await PackageTypeRepository.deletePibotDataByPackageTypeId(package_type_id);
             if(packageTypeFound){
                 if (packageTypeFound.deleted && packageTypeData.deleted != false) {
                     throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
@@ -96,6 +97,7 @@ export class PackageTypeService {
 
     public static async deletePackageType(package_type_id: number): Promise<boolean> {
         try{
+            await PackageTypeRepository.deletePibotDataByPackageTypeId(package_type_id);
             return await PackageTypeRepository.deletePackageType(package_type_id);
         }catch (error: any){
             throw new Error(`Error al eliminar tipo de paquete: ${error.message}`);

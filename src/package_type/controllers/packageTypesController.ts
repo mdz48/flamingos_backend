@@ -71,8 +71,10 @@ export const createPackageType = async (req: Request, res: Response) => {
 
 export const updatePackageType = async (req: Request, res: Response) => {
   try {
+    const { relationship, ...packageTypeData } = req.body;
     const updatedPackageType = await PackageTypeService.modifyPackageType(parseInt(req.params.package_type_id, 10), req.body as PackageType);
-    if (updatedPackageType) {
+    const updatedRelationship = await PackageTypeService.addPibotData(relationship, parseInt(req.params.package_type_id, 10));
+    if (updatedRelationship) {
       res.status(200).json(updatedPackageType);
     } else {
       res.status(400).json({ message: 'Algo salió mal' });
