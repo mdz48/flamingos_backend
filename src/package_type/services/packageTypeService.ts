@@ -1,6 +1,6 @@
 import { PackageTypeRepository } from "../repositories/PackageTypeRepository";
 import { DateUtils } from "../../shared/utils/DateUtils";
-import { PackageType, PackageTypeSummary } from "../models/PackageType";
+import { PackageType, PackageTypeSummary, PibotData } from "../models/PackageType";
 
 export class PackageTypeService {
 
@@ -45,6 +45,11 @@ export class PackageTypeService {
         } catch (error: any) {
             throw new Error(`Error al crear tipo de paquete: ${error.message}`);
         }
+    }
+
+    public static async addPibotData(relationship:Array<Number>, package_type_id: Number){
+        console.log(relationship);
+        console.log(package_type_id);
     }
 
     public static async modifyPackageType(package_type_id: number, packageTypeData: PackageType){

@@ -1,6 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import connection from '../../shared/config/database';
-import { PackageType, PackageTypeSummary } from '../models/PackageType';
+import { PackageType, PackageTypeSummary, PibotData } from '../models/PackageType';
 
 export class PackageTypeRepository {
 
@@ -74,6 +74,21 @@ export class PackageTypeRepository {
           const createdPackageTypeId = result.insertId;
           const createdPackageType: PackageType = { ...packageType, package_type_id: createdPackageTypeId };
           resolve(createdPackageType);
+        }
+      });
+    });
+  }
+
+  public static async createPibotData(pibotData: PibotData): Promise<PibotData> {
+    const query = 'INSERT INTO package_type_supplies (package_type_id_fk, supplies_id_fk, supplies_quantity) VALUES (?, ?, ?)';
+    return new Promise((resolve, reject) => {
+      connection.execute(query, [pibotData.package_type_id_fk, pibotData.supplies_id_fk, 10], (error, result: ResultSetHeader) => {
+        if (error) {
+          reject(error);
+        } else {
+          const createdPibotDataId = result.insertId;
+          const createdPibotData: PibotData = { ...pibotData, package_type_supplies_id: createdPibotDataId };
+          resolve(createdPibotData);
         }
       });
     });

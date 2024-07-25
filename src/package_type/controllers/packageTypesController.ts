@@ -56,7 +56,9 @@ export const getPackageTypeByIdSummaries = async (req: Request, res: Response) =
 
 export const createPackageType = async (req: Request, res: Response) => {
   try {
+    const { relationship } = req.body;
     const newPackageType = await PackageTypeService.addPackageType(req.body as PackageType);
+    const createdRelationship = await PackageTypeService.addPibotData(relationship, newPackageType.package_type_id)
     if (newPackageType) {
       res.status(201).json(newPackageType);
     } else {
