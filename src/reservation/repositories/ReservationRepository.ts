@@ -80,9 +80,7 @@ export class ReservationRepository {
 
   public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
     try {
-      // Verificar si ya existe una reserva en la misma fecha
       const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date);
-  
       if (reservationExists) {
         return { message: 'Ya existe una reserva para esta fecha.' };
       }
@@ -131,7 +129,7 @@ export class ReservationRepository {
   }
 
   public static async deleteReservation(reservation_id: number): Promise<boolean> {
-    const query = 'UPDATE reservation SET deleted = TRUE WHERE reservation_id = ?';
+    const query = 'UPDATE reservation SET deleted = TRUE WHERE reservation_id = ? AND deleted = false';
     return new Promise((resolve, reject) => {
       connection.execute(query, [reservation_id], (error, result: ResultSetHeader) => {
         if (error) {

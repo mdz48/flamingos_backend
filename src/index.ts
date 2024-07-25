@@ -2,6 +2,8 @@ import express, { Application } from 'express';
 import bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
 import cors from 'cors'
+import https from 'https';
+import fs from 'fs';
 
 // Importar rutas de módulos
 import salonRoutes from './salon/routes/salonRoutes';
@@ -23,7 +25,7 @@ dotenv.config();
 
 // Crear la aplicación de Express
 const app: Application = express();
-const port: number = parseInt(process.env.PORT as string, 10);
+const port: number = parseInt(process.env.PORT as string, 10) || 3000;
 
 // Middleware de análisis del cuerpo
 app.use(bodyParser.json());
@@ -50,7 +52,29 @@ app.use(errorHandler);
 app.use(authMiddleware);
 
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+// // Iniciar el servidor
+// app.listen(port, () => {
+//   console.log(`Servidor corriendo en http://localhost:${port}`);
+// });
+
+// Iniciar el servidor HTTP en local
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
+  });
+} else {
+  // Iniciar el servidor HTTPS en producción
+  const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/flamingoapi.integrador.xyz/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/flamingoapi.integrador.xyz/fullchain.pem')
+  };
+
+  https.createServer(options, app).listen(port, () => {
+    console.log(`Servidor HTTPS corriendo en el puerto ${port}`);
+  });
+}
+
+// Ruta de prueba
+app.get('/', (_req, res) => {
+  res.send('HTTPS!');
 });

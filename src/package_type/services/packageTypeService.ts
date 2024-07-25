@@ -1,6 +1,6 @@
 import { PackageTypeRepository } from "../repositories/PackageTypeRepository";
 import { DateUtils } from "../../shared/utils/DateUtils";
-import { PackageType, PackageTypeSummary } from "../models/PackageType";
+import { PackageType, PackageTypeSummary, PibotData } from "../models/PackageType";
 
 export class PackageTypeService {
 
@@ -46,6 +46,22 @@ export class PackageTypeService {
             throw new Error(`Error al crear tipo de paquete: ${error.message}`);
         }
     }
+
+    public static async addPibotData(relationship: Array<number>, package_type_id: number): Promise<PibotData[]> {
+        try {
+          const promises = relationship.map(supplies_id => {
+            const pibotData: PibotData = {
+              package_type_id_fk: package_type_id,
+              supplies_id_fk: supplies_id
+            };
+            return PackageTypeRepository.createPibotData(pibotData);
+          });
+          const results = await Promise.all(promises);
+          return results;
+        } catch (error: any) {
+          throw new Error(`Error al insertar los datos de la relación: ${error.message}`);
+        }
+      }
 
     public static async modifyPackageType(package_type_id: number, packageTypeData: PackageType){
         try{

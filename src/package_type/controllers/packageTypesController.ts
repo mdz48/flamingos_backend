@@ -56,8 +56,10 @@ export const getPackageTypeByIdSummaries = async (req: Request, res: Response) =
 
 export const createPackageType = async (req: Request, res: Response) => {
   try {
+    const { relationship } = req.body;
     const newPackageType = await PackageTypeService.addPackageType(req.body as PackageType);
-    if (newPackageType) {
+    const createdRelationship = await PackageTypeService.addPibotData(relationship, newPackageType.package_type_id)
+    if (newPackageType && createdRelationship) {
       res.status(201).json(newPackageType);
     } else {
       res.status(400).json({ message: 'Algo salió mal' });
@@ -86,7 +88,7 @@ export const deletePackageType = async (req: Request, res: Response) => {
     if (deleted) {
       res.status(200).json({ message: 'Se eliminó el tipo de paquete.' });
     } else {
-      res.status(404).json({ message: 'Algo salió mal' });
+      res.status(404).json({ message: 'No se encontró el paquete' });
     }
   } catch (error: any) {
     res.status(500).json({ error: error.message });

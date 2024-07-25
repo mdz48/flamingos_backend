@@ -17,3 +17,9 @@ export interface PackageTypeSummary {
     cost: number;
     description: string;
 }
+
+export interface PibotData {
+    package_type_supplies_id?: number;
+    package_type_id_fk: number;
+    supplies_id_fk: number;
+}

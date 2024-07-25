@@ -1,6 +1,6 @@
 import { ResultSetHeader } from 'mysql2';
 import connection from '../../shared/config/database';
-import { PackageType, PackageTypeSummary } from '../models/PackageType';
+import { PackageType, PackageTypeSummary, PibotData } from '../models/PackageType';
 
 export class PackageTypeRepository {
 
@@ -79,6 +79,28 @@ export class PackageTypeRepository {
     });
   }
 
+  public static async createPibotData(pibotData: PibotData): Promise<PibotData> {
+    const query = `
+      INSERT INTO package_type_supplies (package_type_id_fk, supplies_id_fk)
+      SELECT pt.package_type_id, s.supplies_id
+      FROM package_type pt
+      JOIN supplies s ON s.supplies_id = ?
+      WHERE pt.package_type_id = ?;
+    `;
+  
+    return new Promise((resolve, reject) => {
+      connection.execute(query, [pibotData.supplies_id_fk, pibotData.package_type_id_fk], (error, result: ResultSetHeader) => {
+        if (error) {
+          reject(error);
+        } else {
+          const createdPibotDataId = result.insertId;
+          const createdPibotData: PibotData = { ...pibotData, package_type_supplies_id: createdPibotDataId };
+          resolve(createdPibotData);
+        }
+      });
+    });
+  }
+
   public static async updatePackageType(package_type_id: number, packageTypeData: PackageType): Promise<PackageType | null> {
     const query = 'UPDATE package_type SET name = ?, cost = ?, description = ?, precreated = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE package_type_id = ?';
     return new Promise((resolve, reject) => {
@@ -98,7 +120,7 @@ export class PackageTypeRepository {
   }
 
   public static async deletePackageType(package_type_id: number): Promise<boolean> {
-    const query = 'UPDATE package_type SET deleted = TRUE WHERE package_type_id = ?';
+    const query = 'UPDATE package_type SET deleted = TRUE WHERE package_type_id = ? AND deleted = false';
     return new Promise((resolve, reject) => {
       connection.execute(query, [package_type_id], (error, result: ResultSetHeader) => {
         if (error) {
