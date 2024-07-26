@@ -40,6 +40,9 @@ export class PackageTypeService {
         try {
             packageType.created_at = DateUtils.formatDate(new Date());
             packageType.updated_at = DateUtils.formatDate(new Date());
+            if (!packageType.precreated) {
+                packageType.precreated = false;     
+            }
             packageType.deleted = false;
             return await PackageTypeRepository.createPackageType(packageType);
         } catch (error: any) {

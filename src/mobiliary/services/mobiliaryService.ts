@@ -1,6 +1,7 @@
 import { MobiliaryRepository } from "../repositories/MobiliaryRepository";
 import { Mobiliary, MobiliarySummary } from "../models/Mobiliary";
 import { DateUtils } from "../../shared/utils/DateUtils";
+import { SalonRepository } from "../../salon/repositories/SalonRepositories";
 
 export class MobiliaryService {
 
@@ -41,6 +42,11 @@ export class MobiliaryService {
             mobiliary.created_at = DateUtils.formatDate(new Date());
             mobiliary.updated_at = DateUtils.formatDate(new Date());
             mobiliary.deleted = false;
+            const salon = await SalonRepository.findById(mobiliary.salon_id_fk);
+            if (salon?.deleted) {
+                throw new Error("Este salón esta deshabilitado");
+                
+            }
             return await MobiliaryRepository.createMobiliary(mobiliary);
         } catch (error: any) {
             throw new Error(`Error al crear mobiliario: ${error.message}`);
@@ -54,9 +60,15 @@ export class MobiliaryService {
                 if (mobiliaryFound.deleted == true && mobiliaryData.deleted != false) {
                     throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
                 } 
+                const salon = await SalonRepository.findById(mobiliaryData.salon_id_fk);
+                if (salon?.deleted) {
+                throw new Error("Este salón esta deshabilitado");
+                
+            }
                 mobiliaryFound.name = mobiliaryData.name || mobiliaryFound.name;
                 mobiliaryFound.stock = mobiliaryData.stock || mobiliaryFound.stock;
                 mobiliaryFound.state = mobiliaryData.state || mobiliaryFound.state;
+                mobiliaryFound.description = mobiliaryData.description || mobiliaryFound.description;
                 if (mobiliaryFound.deleted) {
                     mobiliaryFound.deleted = mobiliaryData.deleted;
                 }

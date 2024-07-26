@@ -50,16 +50,16 @@ export class RentedMobiliaryService {
 
   public static async addRentedMobiliary(rentedMobiliary: RentedMobiliary) {
     try {
-        const rentalStartDate = new Date(rentedMobiliary.rental_start_date.valueOf());
-        const rentalEndDate = new Date(rentedMobiliary.rental_end_date.valueOf());
+        // const rentalStartDate = new Date(rentedMobiliary.rental_start_date.valueOf());
+        // const rentalEndDate = new Date(rentedMobiliary.rental_end_date.valueOf());
 
-        if (!DateUtils.isDateOnOrAfterToday(rentalStartDate)) {
-            throw new Error('La fecha de inicio de alquiler debe ser a partir de hoy.');
-        }
+        // if (!DateUtils.isDateOnOrAfterToday(rentalStartDate)) {
+        //     throw new Error('La fecha de inicio de alquiler debe ser a partir de hoy.');
+        // }
 
-        if (!DateUtils.isDateOnOrAfterToday(rentalEndDate)) {
-            throw new Error('La fecha de finalización de alquiler debe ser a partir de hoy.');
-        }
+        // if (!DateUtils.isDateOnOrAfterToday(rentalEndDate)) {
+        //     throw new Error('La fecha de finalización de alquiler debe ser a partir de hoy.');
+        // }
 
         const today = new Date();
         rentedMobiliary.created_at = DateUtils.formatDate(today);
@@ -83,24 +83,26 @@ export class RentedMobiliaryService {
         if (rentedMobiliary.deleted == true && rentedMobiliaryData.deleted != false) {
           throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
         } 
-        if (rentedMobiliaryData.rental_start_date) {
-          const rentalStartDate = new Date(rentedMobiliaryData.rental_start_date.valueOf());
-          if (!DateUtils.isDateOnOrAfterToday(rentalStartDate)) {
-            throw new Error('La fecha de inicio de alquiler debe ser a partir de hoy.');
-          }
-          rentedMobiliary.rental_start_date = rentedMobiliaryData.rental_start_date;
-        }
-        if (rentedMobiliaryData.rental_end_date) {
-          const rentalEndDate = new Date(rentedMobiliaryData.rental_end_date.valueOf());
-          if (!DateUtils.isDateOnOrAfterToday(rentalEndDate)) {
-            throw new Error('La fecha de finalización de alquiler debe ser a partir de hoy.');
-          }
-          rentedMobiliary.rental_end_date = rentedMobiliaryData.rental_end_date;
-        }
+        // if (rentedMobiliaryData.rental_start_date) {
+        //   const rentalStartDate = new Date(rentedMobiliaryData.rental_start_date.valueOf());
+        //   if (!DateUtils.isDateOnOrAfterToday(rentalStartDate)) {
+        //     throw new Error('La fecha de inicio de alquiler debe ser a partir de hoy.');
+        //   }
+        //   rentedMobiliary.rental_start_date = rentedMobiliaryData.rental_start_date;
+        // }
+        // if (rentedMobiliaryData.rental_end_date) {
+        //   const rentalEndDate = new Date(rentedMobiliaryData.rental_end_date.valueOf());
+        //   if (!DateUtils.isDateOnOrAfterToday(rentalEndDate)) {
+        //     throw new Error('La fecha de finalización de alquiler debe ser a partir de hoy.');
+        //   }
+        //   rentedMobiliary.rental_end_date = rentedMobiliaryData.rental_end_date;
+        // }
         rentedMobiliary.name = rentedMobiliaryData.name || rentedMobiliary.name;
         rentedMobiliary.description = rentedMobiliaryData.description || rentedMobiliary.description;
         rentedMobiliary.rental_cost = rentedMobiliaryData.rental_cost || rentedMobiliary.rental_cost;
         rentedMobiliary.rented_by = rentedMobiliaryData.rented_by || rentedMobiliary.rented_by;
+        rentedMobiliary.rental_start_date = rentedMobiliaryData.rental_start_date || rentedMobiliary.rental_start_date;
+        rentedMobiliary.rental_end_date = rentedMobiliaryData.rental_end_date || rentedMobiliary.rental_end_date;
         if (rentedMobiliary.deleted) {
           rentedMobiliary.deleted = rentedMobiliaryData.deleted;
         }

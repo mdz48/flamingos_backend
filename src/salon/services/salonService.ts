@@ -1,6 +1,7 @@
 import { SalonRepository } from "../repositories/SalonRepositories";
 import { DateUtils } from "../../shared/utils/DateUtils";
 import { Salon, SalonSummary } from "../models/Salon";
+import { MobiliaryRepository } from "../../mobiliary/repositories/MobiliaryRepository";
 
 export class salonService {
 
