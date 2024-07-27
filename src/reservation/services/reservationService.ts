@@ -48,7 +48,7 @@ export class ReservationService {
       reservation.deleted = false;
       return await ReservationRepository.addReservation(reservation);
     } catch (error: any) {
-      throw new Error(`Error al crear la reservación: ${error.message}`);
+      throw new Error(`${error}`);
     }
   }
 

@@ -64,10 +64,10 @@ export class ReservationRepository {
     });
   }
 
-  public static async checkReservationExists(eventDate: String): Promise<boolean> {
-    const query = 'SELECT COUNT(*) AS count FROM reservation WHERE event_date = ? AND deleted = false';
+  public static async checkReservationExists(eventDate: String, salonId: number): Promise<boolean> {
+    const query = 'SELECT COUNT(*) AS count FROM reservation WHERE event_date = ? AND salon_id_fk = ? AND deleted = false';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [eventDate], (error, results: any[]) => {
+      connection.execute(query, [eventDate, salonId], (error, results: any[]) => {
         if (error) {
           reject(error);
         } else {
@@ -77,12 +77,13 @@ export class ReservationRepository {
       });
     });
   }
-
+  
   public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
     try {
-      const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date);
+      const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date, reservation.salon_id_fk);
       if (reservationExists) {
-        return { message: 'Ya existe una reserva para esta fecha.' };
+        throw new Error("Ya existe una reserva para esta fecha y salón.");
+        return { message: 'Ya existe una reserva para esta fecha y salón.' };
       }
   
       reservation.created_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -93,6 +94,7 @@ export class ReservationRepository {
       throw new Error(`Error al crear la reservación: ${error.message}`);
     }
   }
+  
   
   
   public static async createReservation(reservation: Reservation): Promise<Reservation> {
@@ -111,6 +113,10 @@ export class ReservationRepository {
   }
 
   public static async updateReservation(reservation_id: number, reservationData: Reservation): Promise<Reservation | null> {
+    const reservationExists = await ReservationRepository.checkReservationExists(reservationData.event_date, reservationData.salon_id_fk);
+      if (reservationExists) {
+        throw new Error("Ya existe una reserva para esta fecha y salón.");
+      }
     const query = 'UPDATE reservation SET salon_id_fk = ?, client_id_fk = ?, package_type_id_fk = ?, guest_amount = ?, event_date = ?, event_type = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE reservation_id = ?';
     return new Promise((resolve, reject) => {
       connection.execute(query, [reservationData.salon_id_fk, reservationData.client_id_fk, reservationData.package_type_id_fk, reservationData.guest_amount, reservationData.event_date, reservationData.event_type, reservationData.updated_at, reservationData.updated_by, reservationData.deleted, reservation_id], (error, result: ResultSetHeader) => {

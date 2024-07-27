@@ -4,12 +4,12 @@ import { authMiddleware } from '../../shared/middlewares/auth';
 
 const rentedMobiliaryRoutes: Router = Router();
 
-rentedMobiliaryRoutes.get('/', getRentedMobiliary);
-rentedMobiliaryRoutes.get('/summaries', getRentedMobiliarySummaries);
-rentedMobiliaryRoutes.get('/:rented_mobiliary_id', getRentedMobiliaryById);
-rentedMobiliaryRoutes.get('/:rented_mobiliary_id/summaries', getRentedMobiliaryByIdSummaries);
-rentedMobiliaryRoutes.post('/', createRentedMobiliary);
-rentedMobiliaryRoutes.put('/:rented_mobiliary_id', updateRentedMobiliary);
-rentedMobiliaryRoutes.delete('/:rented_mobiliary_id', deleteRentedMobiliary);
+rentedMobiliaryRoutes.get('/', authMiddleware, getRentedMobiliary);
+rentedMobiliaryRoutes.get('/summaries', authMiddleware, getRentedMobiliarySummaries);
+rentedMobiliaryRoutes.get('/:rented_mobiliary_id', authMiddleware, getRentedMobiliaryById);
+rentedMobiliaryRoutes.get('/:rented_mobiliary_id/summaries', authMiddleware, getRentedMobiliaryByIdSummaries);
+rentedMobiliaryRoutes.post('/', authMiddleware, createRentedMobiliary);
+rentedMobiliaryRoutes.put('/:rented_mobiliary_id', authMiddleware, updateRentedMobiliary);
+rentedMobiliaryRoutes.delete('/:rented_mobiliary_id', authMiddleware, deleteRentedMobiliary);
 
 export default rentedMobiliaryRoutes;

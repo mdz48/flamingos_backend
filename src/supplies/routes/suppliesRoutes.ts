@@ -4,12 +4,12 @@ import { authMiddleware } from '../../shared/middlewares/auth';
 
 const suppliesRoutes: Router = Router();
 
-suppliesRoutes.get('/', getSupplies);
-suppliesRoutes.get('/summaries', getSuppliesSummary);
-suppliesRoutes.get('/:supplies_id', getSuppliesById);
-suppliesRoutes.get('/:supplies_id/summaries', getSuppliesByIdSummary);
-suppliesRoutes.post('/', createSupplies);
-suppliesRoutes.put('/:supplies_id', updateSupplies);
-suppliesRoutes.delete('/:supplies_id', deleteSupplies);
+suppliesRoutes.get('/', authMiddleware, getSupplies);
+suppliesRoutes.get('/summaries', authMiddleware, getSuppliesSummary);
+suppliesRoutes.get('/:supplies_id', authMiddleware, getSuppliesById);
+suppliesRoutes.get('/:supplies_id/summaries', authMiddleware, getSuppliesByIdSummary);
+suppliesRoutes.post('/', authMiddleware, createSupplies);
+suppliesRoutes.put('/:supplies_id', authMiddleware, updateSupplies);
+suppliesRoutes.delete('/:supplies_id', authMiddleware, deleteSupplies);
 
 export default suppliesRoutes;
