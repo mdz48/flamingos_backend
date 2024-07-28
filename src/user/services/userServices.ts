@@ -100,6 +100,8 @@ export class UserService {
                     throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
                 }
                 if (userData.mail) {
+                    const usedMail = await UserRepository.findByMail(userData.mail);
+                    if (usedMail) throw new Error("Este correo ya está registrado");
                     userFinded.mail = userData.mail;
                 }
                 if (userData.firstname) {

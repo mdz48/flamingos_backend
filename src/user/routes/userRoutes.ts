@@ -10,7 +10,7 @@ userRoutes.get('/summaries', authMiddleware, getUserSummaries);
 userRoutes.get('/:user_id', authMiddleware, getUserById);
 userRoutes.get('/:mail', authMiddleware, getUserByMail);
 userRoutes.get('/:user_id/summaries', authMiddleware, getUserByIdSummary);
-userRoutes.post('/',  createUser);
+userRoutes.post('/', authMiddleware, createUser);
 userRoutes.put('/:user_id', authMiddleware, updateUser);
 userRoutes.delete('/:user_id', authMiddleware, deleteUser);
 

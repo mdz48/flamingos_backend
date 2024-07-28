@@ -18,29 +18,12 @@ export class UserRepository {
 
     public static async findAllSummaries(): Promise<UserSummary[]> {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT user_id, firstname, lastname, role_user_id_fk FROM user WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
+            connection.query('SELECT user_id, mail, firstname, lastname, role_user_id_fk FROM user WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
                 if (error) {
                     reject(error);
                 } else {
                     const userSummaries: UserSummary[] = results as UserSummary[];
                     resolve(userSummaries);
-                }
-            });
-        });
-    }
-
-    public static async findByMail(mail: string): Promise<User | null> {
-        return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM user WHERE mail = ?', [mail], (error: any, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    const users: User[] = results as User[];
-                    if (users.length > 0) {
-                        resolve(users[0]);
-                    } else {
-                        resolve(null);
-                    }
                 }
             });
         });
@@ -63,9 +46,9 @@ export class UserRepository {
         });
     }
 
-    public static async findByFirstName(firstname: string): Promise<User | null> {
+    public static async findByMail(mail: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM user WHERE firstname = ?', [firstname], (error: any, results) => {
+            connection.query('SELECT * FROM user WHERE mail = ?', [mail], (error: any, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -82,7 +65,7 @@ export class UserRepository {
 
     public static async findByIdSummary(user_id: number): Promise<UserSummary | null> {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT user_id, firstname, lastname, role_user_id_fk FROM user WHERE user_id = ? AND (deleted IS NULL OR deleted = FALSE)', [user_id], (error: any, results) => {
+            connection.query('SELECT user_id, mail, firstname, lastname, role_user_id_fk FROM user WHERE user_id = ? AND (deleted IS NULL OR deleted = FALSE)', [user_id], (error: any, results) => {
                 if (error) {
                     reject(error);
                 } else {
