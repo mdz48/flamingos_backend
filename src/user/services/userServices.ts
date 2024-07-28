@@ -11,9 +11,9 @@ const secretKey = process.env.SECRET || "";
 const saltRounds = 10;
 
 export class UserService {
-    public static async login(user_id: number, password: string) {
+    public static async login(mail: string, password: string) {
         try {
-            const user = await this.getUserById(user_id);
+            const user = await this.getUserByMail(mail);
             if (!user) {
                 return null;
             }
@@ -27,7 +27,7 @@ export class UserService {
                 firstname: user.firstname,
                 lastname: user.lastname
             };
-            return await jwt.sign(payload, secretKey, { expiresIn: '1h' });
+            return await jwt.sign(payload, secretKey, { expiresIn: '3h' });
         } catch (error: any) {
             throw new Error(`Error al logearse: ${error.message}`);
         }
@@ -57,6 +57,14 @@ export class UserService {
         }
     }
 
+    public static async getUserByMail(mail: string): Promise<User | null> {
+        try {
+            return await UserRepository.findByMail(mail);
+        } catch (error: any) {
+            throw new Error(`Error al encontrar usuario: ${error.message}`);
+        }
+    }
+
     public static async getUserByIdSummary(userId: number): Promise<UserSummary | null> {
         try {
             return await UserRepository.findByIdSummary(userId);
@@ -67,6 +75,10 @@ export class UserService {
 
     public static async addUser(user: User) {
         try {
+            const usedMail = await UserRepository.findByMail(user.mail);
+            if (usedMail) {
+                throw new Error("Este correo ya está registrado");
+            }
             const salt = await bcrypt.genSalt(saltRounds);
             user.created_at = DateUtils.formatDate(new Date());
             user.updated_at = DateUtils.formatDate(new Date());
@@ -86,6 +98,9 @@ export class UserService {
             if (userFinded) {
                 if (userFinded.deleted && userData.deleted) {
                     throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
+                }
+                if (userData.mail) {
+                    userFinded.mail = userData.mail;
                 }
                 if (userData.firstname) {
                     userFinded.firstname = userData.firstname;

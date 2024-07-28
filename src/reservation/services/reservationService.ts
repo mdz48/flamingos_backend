@@ -41,14 +41,19 @@ export class ReservationService {
     }
   }
 
-  public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string } > {
+  public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
     try {
+      const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date, reservation.salon_id_fk);
+      if (reservationExists) {
+        throw new Error("Ya existe una reserva para esta fecha y salón.");
+      }
+
       reservation.created_at = DateUtils.formatDate(new Date());
       reservation.updated_at = DateUtils.formatDate(new Date());
       reservation.deleted = false;
       return await ReservationRepository.addReservation(reservation);
     } catch (error: any) {
-      throw new Error(`${error}`);
+      throw new Error(`Error al crear la reservación: ${error.message}`);
     }
   }
 
@@ -56,9 +61,24 @@ export class ReservationService {
     try {
       const reservationFound = await ReservationRepository.findById(reservation_id);
       if (reservationFound) {
-        if (reservationFound.deleted && reservationData.deleted) {
+        if (reservationFound.deleted) {
           throw new Error('Este registro está deshabilitado, habilítelo para actualizarlo');
         }
+
+        const eventDateChanged = reservationData.event_date !== reservationFound.event_date;
+        const salonIdChanged = reservationData.salon_id_fk !== reservationFound.salon_id_fk;
+
+        if (eventDateChanged || salonIdChanged) {
+            const reservationExists = await ReservationRepository.checkReservationExists(
+                reservationData.event_date || reservationFound.event_date,
+                reservationData.salon_id_fk || reservationFound.salon_id_fk,
+                reservation_id
+            );
+            if (reservationExists) {
+                throw new Error("Ya existe una reserva para esta fecha y salón.");
+            }
+        }
+
         reservationFound.salon_id_fk = reservationData.salon_id_fk || reservationFound.salon_id_fk;
         reservationFound.client_id_fk = reservationData.client_id_fk || reservationFound.client_id_fk;
         reservationFound.package_type_id_fk = reservationData.package_type_id_fk || reservationFound.package_type_id_fk;
@@ -67,6 +87,7 @@ export class ReservationService {
         reservationFound.event_type = reservationData.event_type || reservationFound.event_type;
         reservationFound.updated_by = reservationData.updated_by;
         reservationFound.updated_at = DateUtils.formatDate(new Date());
+
         return await ReservationRepository.updateReservation(reservation_id, reservationFound);
       } else {
         return null;

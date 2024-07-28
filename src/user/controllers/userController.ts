@@ -6,8 +6,8 @@ const secretKey = process.env.SECRET || "";
 
 export const login = async (req: Request, res: Response) => {
     try {
-        const { user_id, password } = req.body;
-        const token = await UserService.login(user_id, password);
+        const { mail, password } = req.body;
+        const token = await UserService.login(mail, password);
         if (token) {
             const  user = jwt.verify(token, secretKey) as UserPayload;
             res.setHeader('Authorization', token);
@@ -44,6 +44,20 @@ export const getUserSummaries = async (_req: Request, res: Response) => {
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+export const getUserByMail = async (req: Request, res: Response) => {
+    const { mail } = req.params;
+    try {
+        const user = await UserService.getUserByMail(mail);
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (error: any) {
+        res.status(500).json({ message: `Error al obtener usuario: ${error.message}` });
     }
 };
 

@@ -1,5 +1,6 @@
 export interface User {
     user_id: number | null;
+    mail: string;
     firstname: string;
     lastname: string;
     password: string;
@@ -13,6 +14,7 @@ export interface User {
 
 export interface UserSummary {
     user_id: number | null;
+    mail: string;
     firstname: string;
     lastname: string;
     password: string;

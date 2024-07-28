@@ -64,19 +64,43 @@ export class ReservationRepository {
     });
   }
 
-  public static async checkReservationExists(eventDate: String, salonId: number): Promise<boolean> {
-    const query = 'SELECT COUNT(*) AS count FROM reservation WHERE event_date = ? AND salon_id_fk = ? AND deleted = false';
+  public static async checkReservationExists(eventDate: String, salonId: number, reservationId?: number): Promise<boolean> {
+    let query = 'SELECT COUNT(*) AS count FROM reservation WHERE event_date = ? AND salon_id_fk = ? AND deleted = false';
+    const params: any[] = [eventDate, salonId];
+
+    if (reservationId) {
+        query += ' AND reservation_id != ?';
+        params.push(reservationId);
+    }
+
     return new Promise((resolve, reject) => {
-      connection.execute(query, [eventDate, salonId], (error, results: any[]) => {
-        if (error) {
-          reject(error);
-        } else {
-          const count = results[0].count;
-          resolve(count > 0);
-        }
-      });
+        connection.execute(query, params, (error, results: any[]) => {
+            if (error) {
+                reject(error);
+            } else {
+                const count = results[0].count;
+                resolve(count > 0);
+            }
+        });
     });
-  }
+}
+
+public static async checkIfReservationIsDeleted(reservationId: number): Promise<boolean> {
+  const query = 'SELECT deleted FROM reservation WHERE reservation_id = ?';
+  return new Promise((resolve, reject) => {
+      connection.execute(query, [reservationId], (error, results: any[]) => {
+          if (error) {
+              reject(error);
+          } else {
+              const deleted = results[0].deleted;
+              resolve(deleted);
+          }
+      });
+  });
+}
+
+
+
   
   public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
     try {
@@ -113,26 +137,36 @@ export class ReservationRepository {
   }
 
   public static async updateReservation(reservation_id: number, reservationData: Reservation): Promise<Reservation | null> {
-    const reservationExists = await ReservationRepository.checkReservationExists(reservationData.event_date, reservationData.salon_id_fk);
-      if (reservationExists) {
-        throw new Error("Ya existe una reserva para esta fecha y salón.");
-      }
     const query = 'UPDATE reservation SET salon_id_fk = ?, client_id_fk = ?, package_type_id_fk = ?, guest_amount = ?, event_date = ?, event_type = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE reservation_id = ?';
     return new Promise((resolve, reject) => {
-      connection.execute(query, [reservationData.salon_id_fk, reservationData.client_id_fk, reservationData.package_type_id_fk, reservationData.guest_amount, reservationData.event_date, reservationData.event_type, reservationData.updated_at, reservationData.updated_by, reservationData.deleted, reservation_id], (error, result: ResultSetHeader) => {
-        if (error) {
-          reject(error);
-        } else {
-          if (result.affectedRows > 0) {
-            const updatedReservation: Reservation = { ...reservationData, reservation_id: reservation_id };
-            resolve(updatedReservation);
-          } else {
-            resolve(null);
-          }
-        }
-      });
+        connection.execute(query, [
+            reservationData.salon_id_fk, 
+            reservationData.client_id_fk, 
+            reservationData.package_type_id_fk, 
+            reservationData.guest_amount, 
+            reservationData.event_date, 
+            reservationData.event_type, 
+            reservationData.updated_at, 
+            reservationData.updated_by, 
+            reservationData.deleted, 
+            reservation_id
+        ], (error, result: ResultSetHeader) => {
+            if (error) {
+                reject(error);
+            } else {
+                if (result.affectedRows > 0) {
+                    const updatedReservation: Reservation = { ...reservationData, reservation_id: reservation_id };
+                    resolve(updatedReservation);
+                } else {
+                    resolve(null);
+                }
+            }
+        });
     });
-  }
+}
+
+
+
 
   public static async deleteReservation(reservation_id: number): Promise<boolean> {
     const query = 'UPDATE reservation SET deleted = TRUE WHERE reservation_id = ? AND deleted = false';
