@@ -4,6 +4,7 @@ node_modules/
 
 # production
 /build
+/certs
 
 # IDE - VSCode
 /.vscode
