@@ -12,9 +12,25 @@ export class PackageTypeService {
         }
     }
 
+    public static async getAllPibotData(): Promise<PibotData[]> {
+        try {
+            return await PackageTypeRepository.findAllPibot();
+        } catch (error: any) {
+            throw new Error(`Error al obtener los tipos de paquete: ${error.message}`);
+        }
+    }
+
     public static async getPackageTypeById(package_type_id: number): Promise<PackageType | null> {
         try {
             return await PackageTypeRepository.findById(package_type_id);
+        } catch (error: any) {
+            throw new Error(`Error al encontrar tipo de paquete: ${error.message}`);
+        }
+    }
+
+    public static async getPibotByPackageId(package_type_id: number): Promise<PibotData | null> {
+        try {
+            return await PackageTypeRepository.findByIdPibot(package_type_id);
         } catch (error: any) {
             throw new Error(`Error al encontrar tipo de paquete: ${error.message}`);
         }

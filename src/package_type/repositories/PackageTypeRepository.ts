@@ -17,6 +17,19 @@ export class PackageTypeRepository {
     });
   }
 
+  public static async findAllPibot(): Promise<PibotData[]> {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT * FROM package_type_supplies', (error: any, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          const packageTypesSupplies: PibotData[] = results as PibotData[];
+          resolve(packageTypesSupplies);
+        }
+      });
+    });
+  }
+
   public static async findAllSummaries(): Promise<PackageTypeSummary[]> {
     return new Promise((resolve, reject) => {
       connection.query('SELECT package_type_id, name, cost, description FROM package_type WHERE deleted IS NULL OR deleted = FALSE', (error: any, results) => {
@@ -39,6 +52,23 @@ export class PackageTypeRepository {
           const packageTypes: PackageType[] = results as PackageType[];
           if (packageTypes.length > 0) {
             resolve(packageTypes[0]);
+          } else {
+            resolve(null);
+          }
+        }
+      });
+    });
+  }
+
+  public static async findByIdPibot(package_type_id: number): Promise<PibotData | null> {
+    return new Promise((resolve, reject) => {
+      connection.query('SELECT * FROM package_type_supplies WHERE package_type_id = ?', [package_type_id], (error: any, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          const packageTypesSupplies: PibotData[] = results as PibotData[];
+          if (packageTypesSupplies.length > 0) {
+            resolve(packageTypesSupplies[0]);
           } else {
             resolve(null);
           }

@@ -15,6 +15,19 @@ export const getPackageTypes = async (_req: Request, res: Response) => {
   }
 };
 
+export const getPibot = async (_req: Request, res: Response) => {
+  try {
+    const packageTypes = await PackageTypeService.getAllPibotData();
+    if (packageTypes) {
+      res.status(200).json(packageTypes);
+    } else {
+      res.status(404).json({ message: 'Sin registros' });
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getPackageTypesSummaries = async (_req: Request, res: Response) => {
   try {
     const packageTypes = await PackageTypeService.getAllPackageTypeSummaries();
@@ -31,6 +44,8 @@ export const getPackageTypesSummaries = async (_req: Request, res: Response) => 
 export const getPackageTypeById = async (req: Request, res: Response) => {
   try {
     const packageType = await PackageTypeService.getPackageTypeById(parseInt(req.params.package_type_id, 10));
+    const pibotData = await PackageTypeService.getPibotByPackageId(parseInt(req.params.package_type_id, 10));
+
     if (packageType) {
       res.status(200).json(packageType);
     } else {
