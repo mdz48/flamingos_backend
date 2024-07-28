@@ -73,11 +73,11 @@ export class UserService {
         }
     }
 
-    public static async addUser(user: User) {
+    public static async addUser(user: User): Promise<User | { error: string }> {
         try {
             const usedMail = await UserRepository.findByMail(user.mail);
             if (usedMail) {
-                throw new Error("Este correo ya está registrado");
+                return { error: "Este correo ya está registrado" };
             }
             const salt = await bcrypt.genSalt(saltRounds);
             user.created_at = DateUtils.formatDate(new Date());
@@ -86,49 +86,53 @@ export class UserService {
             user.deleted = false;
             return await UserRepository.createUser(user);
         } catch (error: any) {
-            throw new Error(`Error al crear usuario: ${error.message}`);
+            throw new Error(`Error al crear usuario ${error.message}`);
+            
         }
     }
-
-    public static async modifyUser(userId: number, userData: User) {
+    
+    public static async modifyUser(userId: number, userData: User): Promise<User | { error: string } | null> {
         try {
-            const userFinded = await UserRepository.findById(userId);
-            const salt = await bcrypt.genSalt(saltRounds);
-
-            if (userFinded) {
-                if (userFinded.deleted && userData.deleted) {
-                    throw new Error("Este registro está deshabilitado, habilítalo para actualizarlo");
-                }
-                if (userData.mail) {
-                    const usedMail = await UserRepository.findByMail(userData.mail);
-                    if (usedMail) throw new Error("Este correo ya está registrado");
-                    userFinded.mail = userData.mail;
-                }
-                if (userData.firstname) {
-                    userFinded.firstname = userData.firstname;
-                }
-                if (userData.lastname) {
-                    userFinded.lastname = userData.lastname;
-                }
-                if (userData.password) {
-                    userFinded.password = await bcrypt.hash(userData.password, salt);
-                }
-                if (userData.role_user_id_fk) {
-                    userFinded.role_user_id_fk = userData.role_user_id_fk;
-                }
-                if (userFinded.deleted) {
-                    userFinded.deleted = userData.deleted;
-                }
-            } else {
+            const userFound = await UserRepository.findById(userId);
+            if (!userFound) {
                 return null;
             }
-            userFinded.updated_by = userData.updated_by;
-            userFinded.updated_at = DateUtils.formatDate(new Date());
-            return await UserRepository.updateUser(userId, userFinded);
+            const salt = await bcrypt.genSalt(saltRounds);
+    
+            if (userFound.deleted && userData.deleted) {
+                return { error: "Este registro está deshabilitado, habilítalo para actualizarlo" };
+            }
+            if (userData.mail && userData.mail != userFound.mail) {
+                const usedMail = await UserRepository.findByMail(userData.mail);
+                if (usedMail) {
+                    return { error: "Este correo ya está registrado" };
+                }
+                userFound.mail = userData.mail;
+            }
+            if (userData.firstname) {
+                userFound.firstname = userData.firstname;
+            }
+            if (userData.lastname) {
+                userFound.lastname = userData.lastname;
+            }
+            if (userData.password) {
+                userFound.password = await bcrypt.hash(userData.password, salt);
+            }
+            if (userData.role_user_id_fk) {
+                userFound.role_user_id_fk = userData.role_user_id_fk;
+            }
+            if (userFound.deleted) {
+                userFound.deleted = userData.deleted;
+            }
+            userFound.updated_by = userData.updated_by;
+            userFound.updated_at = DateUtils.formatDate(new Date());
+            return await UserRepository.updateUser(userId, userFound);
         } catch (error: any) {
             throw new Error(`Error al modificar usuario: ${error.message}`);
+            
         }
     }
+    
 
     public static async deleteUser(userId: number): Promise<boolean> {
         try {

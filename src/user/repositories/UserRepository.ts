@@ -48,7 +48,7 @@ export class UserRepository {
 
     public static async findByMail(mail: string): Promise<User | null> {
         return new Promise((resolve, reject) => {
-            connection.query('SELECT * FROM user WHERE mail = ?', [mail], (error: any, results) => {
+            connection.query('SELECT * FROM user WHERE mail = ? AND deleted = false', [mail], (error: any, results) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -96,7 +96,7 @@ export class UserRepository {
     }
 
     public static async updateUser(user_id: number, userData: User): Promise<User | null> {
-        const query = 'UPDATE user SET mail = ?, firstname = ?, lastname = ?, password = ?, role_user_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE user_id = ?';
+        const query = 'UPDATE user SET mail = ?, firstname = ?, lastname = ?, password = ?, role_user_id_fk = ?, updated_at = ?, updated_by = ?, deleted = ? WHERE user_id = ? AND deleted = false';
         return new Promise((resolve, reject) => {
             connection.execute(query, [userData.mail, userData.firstname, userData.lastname, userData.password, userData.role_user_id_fk, userData.updated_at, userData.updated_by, userData.deleted, user_id], (error, result: ResultSetHeader) => {
                 if (error) {

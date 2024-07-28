@@ -55,12 +55,16 @@ export const getReservationByIdSummary = async (req: Request, res: Response) => 
         res.status(500).json({ error: error.message });
     }
 };
-
 export const createReservation = async (req: Request, res: Response) => {
     try {
         const newReservation: Reservation = req.body;
-        const createdReservation = await ReservationService.addReservation(newReservation);
-        res.status(201).json(createdReservation);
+        const result = await ReservationService.addReservation(newReservation);
+
+        if ('error' in result) {
+            res.status(409).json({ message: result.error });
+        } else {
+            res.status(201).json(result);
+        }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
@@ -70,11 +74,14 @@ export const updateReservation = async (req: Request, res: Response) => {
     try {
         const reservation_id = parseInt(req.params.reservation_id, 10);
         const reservationData: Reservation = req.body;
-        const updatedReservation = await ReservationService.modifyReservation(reservation_id, reservationData);
-        if (updatedReservation) {
-            res.status(200).json(updatedReservation);
-        } else {
+        const result = await ReservationService.modifyReservation(reservation_id, reservationData);
+
+        if (result === null) {
             res.status(404).json({ message: 'No se encontró la reservación o está deshabilitada' });
+        } else if ('error' in result) {
+            res.status(409).json({ message: result.error });
+        } else {
+            res.status(200).json(result);
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });

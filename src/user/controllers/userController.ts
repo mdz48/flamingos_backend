@@ -89,11 +89,11 @@ export const getUserByIdSummary = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const newUser = await UserService.addUser(req.body);
-        if (newUser) {
-            res.status(201).json(newUser);
+        const result = await UserService.addUser(req.body);
+        if ('error' in result) {
+            res.status(409).json({ message: result.error });
         } else {
-            res.status(400).json({ message: 'Algo salió mal' });
+            res.status(201).json(result);
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -102,16 +102,20 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
     try {
-        const updatedUser = await UserService.modifyUser(parseInt(req.params.user_id, 10), req.body);
-        if (updatedUser) {
-            res.status(200).json(updatedUser);
+        const userId = parseInt(req.params.user_id, 10);
+        const result = await UserService.modifyUser(userId, req.body);
+        if (result === null) {
+            res.status(404).json({ message: 'No se encontró el usuario o está deshabilitado' });
+        } else if ('error' in result) {
+            res.status(409).json({ message: result.error });
         } else {
-            res.status(400).json({ message: 'Algo salió mal' });
+            res.status(200).json(result);
         }
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 };
+
 
 export const deleteUser = async (req: Request, res: Response) => {
     try {

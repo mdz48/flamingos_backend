@@ -23,7 +23,6 @@ export class ReservationService {
   public static async getAllReservationSummaries(): Promise<ReservationSumary[]> {
     try {
       const summaries = await ReservationRepository.findAllSummaries();
-      // Formatear las fechas en cada resumen antes de devolver
       return summaries.map(summary => ({
         ...summary,
         event_date: DateUtils.formatDateOnly(new Date(summary.event_date)),
@@ -41,28 +40,31 @@ export class ReservationService {
     }
   }
 
-  public static async addReservation(reservation: Reservation): Promise<Reservation | { message: string }> {
+  public static async addReservation(reservation: Reservation): Promise<Reservation | { error: string }> {
     try {
-      const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date, reservation.salon_id_fk);
-      if (reservationExists) {
-        throw new Error("Ya existe una reserva para esta fecha y salón.");
-      }
+        const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date, reservation.salon_id_fk);
+        if (reservationExists) {
+            return { error: "Ya existe una reserva para esta fecha y salón." };
+        }
 
-      reservation.created_at = DateUtils.formatDate(new Date());
-      reservation.updated_at = DateUtils.formatDate(new Date());
-      reservation.deleted = false;
-      return await ReservationRepository.addReservation(reservation);
+        reservation.created_at = DateUtils.formatDate(new Date());
+        reservation.updated_at = DateUtils.formatDate(new Date());
+        reservation.deleted = false;
+        return await ReservationRepository.createReservation(reservation);
     } catch (error: any) {
-      throw new Error(`Error al crear la reservación: ${error.message}`);
+        return { error: `Error al crear la reservación: ${error.message}` };
     }
-  }
+}
 
-  public static async modifyReservation(reservation_id: number, reservationData: Reservation): Promise<Reservation | null> {
+
+  public static async modifyReservation(reservation_id: number, reservationData: Reservation): Promise<Reservation | { error: string } | null> {
     try {
-      const reservationFound = await ReservationRepository.findById(reservation_id);
-      if (reservationFound) {
+        const reservationFound = await ReservationRepository.findById(reservation_id);
+        if (!reservationFound) {
+            return null;
+        }
         if (reservationFound.deleted) {
-          throw new Error('Este registro está deshabilitado, habilítelo para actualizarlo');
+            return { error: 'Este registro está deshabilitado, habilítelo para actualizarlo' };
         }
 
         const eventDateChanged = reservationData.event_date !== reservationFound.event_date;
@@ -75,7 +77,7 @@ export class ReservationService {
                 reservation_id
             );
             if (reservationExists) {
-                throw new Error("Ya existe una reserva para esta fecha y salón.");
+                return { error: "Ya existe una reserva para esta fecha y salón." };
             }
         }
 
@@ -89,13 +91,11 @@ export class ReservationService {
         reservationFound.updated_at = DateUtils.formatDate(new Date());
 
         return await ReservationRepository.updateReservation(reservation_id, reservationFound);
-      } else {
-        return null;
-      }
     } catch (error: any) {
-      throw new Error(`Error al modificar la reservación: ${error.message}`);
+        return { error: `Error al modificar la reservación: ${error.message}` };
     }
-  }
+}
+
 
   public static async deleteReservation(reservation_id: number): Promise<boolean> {
     try {

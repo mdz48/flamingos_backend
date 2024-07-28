@@ -45,7 +45,9 @@ export class MobiliaryService {
             const salon = await SalonRepository.findById(mobiliary.salon_id_fk);
             if (salon?.deleted) {
                 throw new Error("Este salón esta deshabilitado");
-                
+            }
+            if (!mobiliary.description) {
+                mobiliary.description = 'Sin descripción';
             }
             return await MobiliaryRepository.createMobiliary(mobiliary);
         } catch (error: any) {
@@ -63,8 +65,8 @@ export class MobiliaryService {
                 const salon = await SalonRepository.findById(mobiliaryData.salon_id_fk);
                 if (salon?.deleted) {
                 throw new Error("Este salón esta deshabilitado");
-                
-            }
+                }   
+                mobiliaryFound.salon_id_fk = mobiliaryData.salon_id_fk || mobiliaryFound.salon_id_fk;
                 mobiliaryFound.name = mobiliaryData.name || mobiliaryFound.name;
                 mobiliaryFound.stock = mobiliaryData.stock || mobiliaryFound.stock;
                 mobiliaryFound.state = mobiliaryData.state || mobiliaryFound.state;

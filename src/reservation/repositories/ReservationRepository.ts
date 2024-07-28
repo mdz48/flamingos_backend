@@ -106,7 +106,6 @@ public static async checkIfReservationIsDeleted(reservationId: number): Promise<
     try {
       const reservationExists = await ReservationRepository.checkReservationExists(reservation.event_date, reservation.salon_id_fk);
       if (reservationExists) {
-        throw new Error("Ya existe una reserva para esta fecha y salón.");
         return { message: 'Ya existe una reserva para esta fecha y salón.' };
       }
   
