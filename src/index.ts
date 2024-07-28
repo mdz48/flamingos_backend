@@ -64,8 +64,8 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   try {
     const options = {
-      key: fs.readFileSync('/etc/letsencrypt/live/flamingoapi.integrador.xyz/privkey.pem'),
-      cert: fs.readFileSync('/etc/letsencrypt/live/flamingoapi.integrador.xyz/fullchain.pem')
+      key: fs.readFileSync('certs/privkey.pem'),
+      cert: fs.readFileSync('certs/cert.pem')  
     };
 
     https.createServer(options, app).listen(port, () => {
