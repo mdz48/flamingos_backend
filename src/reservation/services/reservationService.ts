@@ -1,6 +1,7 @@
 import { ReservationRepository } from '../repositories/ReservationRepository';
 import { Reservation, ReservationSumary } from '../models/Reservation';
 import { DateUtils } from '../../shared/utils/DateUtils';
+import { SalonRepository } from '../../salon/repositories/SalonRepositories';
 
 export class ReservationService {
 
@@ -47,6 +48,14 @@ export class ReservationService {
             return { error: "Ya existe una reserva para esta fecha y salón." };
         }
 
+        const salon = await SalonRepository.findById(reservation.salon_id_fk)
+        if (salon) {
+          if (salon.capacity < reservation.guest_amount) {
+            throw new Error("Excede la capacidad de personas del salón");
+            
+          }
+        }
+
         reservation.created_at = DateUtils.formatDate(new Date());
         reservation.updated_at = DateUtils.formatDate(new Date());
         reservation.deleted = false;
@@ -65,6 +74,14 @@ export class ReservationService {
         }
         if (reservationFound.deleted) {
             return { error: 'Este registro está deshabilitado, habilítelo para actualizarlo' };
+        }
+
+        const salon = await SalonRepository.findById(reservationFound.salon_id_fk)
+        if (salon && reservationData.guest_amount) {
+          if (salon.capacity < reservationData.guest_amount) {
+            throw new Error("Excede la capacidad de personas del salón");
+            
+          }
         }
 
         const eventDateChanged = reservationData.event_date !== reservationFound.event_date;
