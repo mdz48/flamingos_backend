@@ -41,6 +41,7 @@ export const getPackageTypesSummaries = async (_req: Request, res: Response) => 
   }
 };
 
+
 export const getPackageTypeById = async (req: Request, res: Response) => {
   try {
     const packageType = await PackageTypeService.getPackageTypeById(parseInt(req.params.package_type_id, 10));

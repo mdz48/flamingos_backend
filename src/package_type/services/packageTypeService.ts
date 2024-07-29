@@ -38,11 +38,11 @@ export class PackageTypeService {
 
     public static async getAllPackageTypeSummaries(): Promise<PackageTypeSummary[]> {
         try {
-            return await PackageTypeRepository.findAllSummaries();
+          return await PackageTypeRepository.findAllSummariesWithSupplies();
         } catch (error: any) {
-            throw new Error(`Error al obtener resúmenes de tipos de paquete: ${error.message}`);
+          throw new Error(`Error al obtener resúmenes de tipos de paquete: ${error.message}`);
         }
-    }
+      }
 
     public static async getPackageTypeByIdSummary(package_type_id: number): Promise<PackageTypeSummary | null> {
         try {

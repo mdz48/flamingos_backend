@@ -11,15 +11,23 @@ export interface PackageType {
     deleted: boolean | null;
 }
 
-export interface PackageTypeSummary {
-    package_type_id: number;
-    name: string;
-    cost: number;
-    description: string;
-}
+// export interface PackageTypeSummary {
+//     package_type_id: number;
+//     name: string;
+//     cost: number;
+//     description: string;
+// }
 
 export interface PibotData {
     package_type_supplies_id?: number;
     package_type_id_fk: number;
     supplies_id_fk: number;
 }
+
+export interface PackageTypeSummary {
+    package_type_id: number;
+    name: string;
+    cost: number;
+    description: string;
+    supplies: { supplies_id: number; name: string }[];
+  }

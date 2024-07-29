@@ -43,6 +43,40 @@ export class PackageTypeRepository {
     });
   }
 
+  public static async findAllSummariesWithSupplies(): Promise<PackageTypeSummary[]> {
+    const query = `
+      SELECT 
+        pt.package_type_id, pt.name, pt.cost, pt.description,
+        GROUP_CONCAT(s.supplies_id) AS supplies_ids,
+        GROUP_CONCAT(s.name) AS supplies_names
+        FROM package_type pt
+        LEFT JOIN package_type_supplies pts ON pt.package_type_id = pts.package_type_id_fk
+        LEFT JOIN supplies s ON pts.supplies_id_fk = s.supplies_id
+        WHERE pt.deleted IS NULL OR pt.deleted = FALSE
+        GROUP BY pt.package_type_id
+      `;
+
+    return new Promise((resolve, reject) => {
+      connection.query(query, (error: any, results: any) => {
+        if (error) {
+          reject(error);
+        } else {
+          const packageTypeSummaries: PackageTypeSummary[] = (results as any[]).map(row => ({
+            package_type_id: row.package_type_id,
+            name: row.name,
+            cost: row.cost,
+            description: row.description,
+            supplies: row.supplies_ids ? row.supplies_ids.split(',').map((id: string, index: number) => ({
+              supplies_id: parseInt(id, 10),
+              name: row.supplies_names.split(',')[index]
+            })) : []
+          }));
+          resolve(packageTypeSummaries);
+        }
+      });
+    });
+  }
+
   public static async findById(package_type_id: number): Promise<PackageType | null> {
     return new Promise((resolve, reject) => {
       connection.query('SELECT * FROM package_type WHERE package_type_id = ?', [package_type_id], (error: any, results) => {
